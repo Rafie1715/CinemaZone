@@ -1,6 +1,7 @@
 package com.dicoding.projekakhirplatformkelompok5.ui.profile
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -41,7 +42,12 @@ class OrderHistoryActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        orderHistoryAdapter = OrderHistoryAdapter(emptyList())
+        orderHistoryAdapter = OrderHistoryAdapter(emptyList()) { selectedOrder ->
+            // Saat item diklik, buka TicketDetailActivity
+            val intent = Intent(this, TicketDetailActivity::class.java)
+            intent.putExtra(TicketDetailActivity.EXTRA_ORDER, selectedOrder)
+            startActivity(intent)
+        }
         binding.recyclerViewOrderHistoryPage.adapter = orderHistoryAdapter
     }
 

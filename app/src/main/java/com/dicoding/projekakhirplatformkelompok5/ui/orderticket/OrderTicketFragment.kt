@@ -1,6 +1,7 @@
 package com.dicoding.projekakhirplatformkelompok5.ui.orderticket
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import com.dicoding.projekakhirplatformkelompok5.data.local.Order
 import com.dicoding.projekakhirplatformkelompok5.data.local.OrderDatabaseHelper
 import com.dicoding.projekakhirplatformkelompok5.data.network.ApiClient
 import com.dicoding.projekakhirplatformkelompok5.databinding.FragmentOrderTicketBinding
+import com.dicoding.projekakhirplatformkelompok5.ui.profile.TicketDetailActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -97,7 +99,16 @@ class OrderTicketFragment : Fragment() {
 
     // ... (Fungsi setupOrderHistoryRecyclerView dan fetchMoviesForSpinner tetap sama) ...
     private fun setupOrderHistoryRecyclerView() {
-        orderHistoryAdapter = OrderHistoryAdapter(emptyList())
+        orderHistoryAdapter = OrderHistoryAdapter(emptyList()) { selectedOrder ->
+            // 1. Buat Intent untuk membuka halaman detail tiket
+            val intent = Intent(activity, TicketDetailActivity::class.java)
+
+            // 2. Selipkan data pesanan yang di-klik ke dalam Intent
+            intent.putExtra(TicketDetailActivity.EXTRA_ORDER, selectedOrder)
+
+            // 3. Mulai Activity baru
+            startActivity(intent)
+        }
         binding.recyclerViewOrderHistory.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = orderHistoryAdapter

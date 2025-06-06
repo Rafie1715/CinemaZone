@@ -53,4 +53,6 @@
     <string name="riwayat_pesanan">Riwayat Pesanan</string>
     <string name="aplikasi">Aplikasi</string>
     <string name="tentang_aplikasi">Tentang Aplikasi</string>
+    <string name="qr_code_tiket">QR Code Tiket</string>
+    <string name="simpan_ke_galeri">Simpan ke Galeri</string>
 </resources>
