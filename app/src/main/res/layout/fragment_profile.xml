@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".ui.profile.ProfileFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingBottom="24dp">
+
+        <ImageView
+            android:id="@+id/iv_profile_picture"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_profile"
+            android:contentDescription="@string/profile_picture"/>
+
+        <TextView
+            android:id="@+id/tv_profile_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            tools:text="Nama Pengguna"
+            android:textAppearance="?attr/textAppearanceHeadline6"/>
+
+        <TextView
+            android:id="@+id/tv_profile_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            tools:text="email@example.com"
+            android:textAppearance="?attr/textAppearanceBody2"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/akun"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:textAppearance="?attr/textAppearanceLabelLarge"/>
+
+    <Button
+        android:id="@+id/btn_edit_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/ubah_nama"
+        style="?attr/materialButtonOutlinedStyle"/>
+
+    <Button
+        android:id="@+id/btn_order_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/riwayat_pesanan"
+        android:layout_marginTop="8dp"
+        style="?attr/materialButtonOutlinedStyle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/aplikasi"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="8dp"
+        android:textAppearance="?attr/textAppearanceLabelLarge"/>
+
+    <Button
+        android:id="@+id/btn_about_app"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tentang_aplikasi"
+        style="?attr/materialButtonOutlinedStyle" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/btn_logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/logout"
+        app:backgroundTint="?attr/colorError"/>
+
+</LinearLayout>

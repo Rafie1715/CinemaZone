@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">CinemaZone</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="title_home">Home</string>
+    <string name="title_order_ticket">Order Ticket</string>
+    <string name="title_wishlist">Wishlist</string>
+    <string name="title_profile">Profile</string>
+
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="full_name">Full Name</string>
+    <string name="dont_have_account">Don\'t have an account? Register here</string>
+    <string name="already_have_account">Already have an account? Login here</string>
+    <string name="logout">Logout</string>
+    <string name="edit_profile">Edit Profile</string>
+
+    <string name="movie_poster_description">Movie Poster</string>
+    <string name="available_movies">Available Movies</string>
+    <string name="add_to_wishlist">Add to Wishlist</string>
+    <string name="remove_from_wishlist">Remove from Wishlist</string>
+    <string name="failed_to_load_movies">Failed to load movies</string>
+    <string name="no_movies_found">No movies found.</string>
+    <string name="release_date_label">Release Date: </string>
+    <string name="rating_label">Rating: </string>
+
+    <string name="select_movie">Select Movie:</string>
+    <string name="select_seat">Select Seat:</string>
+    <string name="ticket_quantity">Ticket Quantity:</string>
+    <string name="process_order">Process Order</string>
+    <string name="order_history">Your Order History:</string>
+    <string name="hint_quantity">0</string>
+    <string name="choose_film_prompt">Choose Film</string>
+
+    <string name="wishlist_title">Movie Wishlist</string>
+    <string name="empty_wishlist">Your wishlist is empty.</string>
+
+    <string name="profile_name_placeholder">User Name</string>
+    <string name="profile_email_placeholder">user@example.com</string>
+    <string name="no_order_history_yet">No order history yet.</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="pilih_kursi_anda">Pilih Kursi Anda</string>
+    <string name="selesai">Selesai</string>
+    <string name="tonton_trailer">Tonton Trailer</string>
+    <string name="kelompok_5">Kelompok 5</string>
+    <string name="_2025">© 2025</string>
+    <string name="app_logo">App Logo</string>
+    <string name="dibuat_sebagai_proyek_akhir_mata_kuliah_pemrograman_berbasis_platform">Dibuat sebagai Proyek Akhir Mata Kuliah Pemrograman Berbasis Platform</string>
+    <string name="akun">Akun</string>
+    <string name="ubah_nama">Ubah Nama</string>
+    <string name="riwayat_pesanan">Riwayat Pesanan</string>
+    <string name="aplikasi">Aplikasi</string>
+    <string name="tentang_aplikasi">Tentang Aplikasi</string>
+</resources>
