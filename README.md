@@ -97,9 +97,9 @@ Untuk menjalankan proyek ini di Android Studio, ikuti langkah-langkah berikut:
 
 ## 🧑‍💻 Kontributor
 
-Proyek ini dibuat oleh:
+Proyek ini disusun untuk Proyek Akhir Mata Kuliah Pemrograman Berbasis Platform dan dibuat oleh:
 
-* **[Nama Anda / Nama Kelompok Anda]**
+* **[Rafie Rojagat Bachri / Kelompok 5]**
 
 ---
 
