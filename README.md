@@ -12,8 +12,6 @@ Aplikasi ini mendemonstrasikan implementasi arsitektur Android modern, integrasi
 
 ## 📸 Screenshot Aplikasi
 
-_**Catatan:** Ganti link placeholder di bawah ini dengan URL screenshot nyata dari aplikasi Anda._
-
 | Halaman Login & Register | Halaman Utama (Home) | Filter & Search |
 | :---: | :---: | :---: |
 | <img src="https://github.com/user-attachments/assets/e8f383b7-8884-498e-9eb8-1827428fbc76" alt="Login" width="270"> <br><br> <img src="https://github.com/user-attachments/assets/b9842457-26c5-4f3e-a7aa-a2beb8b5f9e9" alt="Register" width="270"> | ![Home](https://github.com/user-attachments/assets/977818f9-a481-4447-83d1-2edd14260b21) | ![Filter](https://github.com/user-attachments/assets/c70d1276-96d9-4ca0-a1f3-6aacc76fd4cf) |
