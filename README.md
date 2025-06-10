@@ -1,73 +1,75 @@
-# CinemaZone 🎬
+# CinemaZone 🎬✨
 
-![Java](https://img.shields.io/badge/Made%20with-Kotlin-blue?logo=kotlin)
+![Kotlin](https://img.shields.io/badge/Made%20with-Kotlin-blue?logo=kotlin)
 ![Platform](https://img.shields.io/badge/Platform-Android-green.svg?style=flat)
+![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)
 
-Selamat datang di repositori CinemaZone! Ini adalah aplikasi pemesanan tiket bioskop berbasis Android yang dikembangkan sebagai Proyek Akhir. Aplikasi ini dirancang untuk memberikan pengalaman pemesanan tiket yang mulus, mulai dari melihat daftar film, memesan kursi, hingga mendapatkan e-ticket dalam bentuk QR Code.
+Selamat datang di repositori **CinemaZone**, sebuah aplikasi pemesanan tiket bioskop modern berbasis Android yang dikembangkan sebagai Proyek Akhir. Aplikasi ini dirancang dengan antarmuka yang dinamis dan fungsionalitas lengkap, memberikan pengalaman pengguna yang mulus dari awal hingga akhir.
+
+Aplikasi ini mendemonstrasikan implementasi arsitektur Android modern, integrasi dengan layanan backend, manajemen database lokal, dan peningkatan UX melalui animasi.
 
 ## 📸 Screenshot Aplikasi
 
-_**Catatan:** Ganti link di bawah ini dengan screenshot nyata dari aplikasi Anda. Anda bisa mengunggah gambar ke tab "Issues" di GitHub untuk mendapatkan link, lalu menyalin alamat gambarnya._
+_**Catatan:** Ganti link placeholder di bawah ini dengan URL screenshot nyata dari aplikasi Anda._
 
-| Halaman Login | Halaman Utama (Home) | Detail Film |
+| Halaman Login | Halaman Utama (Home) | Filter & Search |
 | :---: | :---: | :---: |
-| ![Login](https://via.placeholder.com/250x500.png?text=Halaman+Login) | ![Home](https://via.placeholder.com/250x500.png?text=Halaman+Utama) | ![Detail](https://via.placeholder.com/250x500.png?text=Detail+Film) |
+| ![Login](https://drive.google.com/file/d/1wtDAXoJ1qtK8O14JUGLjGsHSYWms4O_0/view?usp=sharing) | ![Home](https://via.placeholder.com/270x540.png?text=Daftar+Film) | ![Filter](https://via.placeholder.com/270x540.png?text=Filter+Genre) |
 
-| Pemilihan Kursi | Riwayat Pesanan | E-Ticket QR Code |
+| Detail Film | Pemesanan & Pemilihan Kursi | Riwayat & E-Ticket |
 | :---: | :---: | :---: |
-| ![Pilih Kursi](https://via.placeholder.com/250x500.png?text=Pilih+Kursi) | ![Riwayat](https://via.placeholder.com/250x500.png?text=Riwayat+Pesanan) | ![E-Ticket](https://via.placeholder.com/250x500.png?text=E-Ticket+QR) |
+| ![Detail Film](https://via.placeholder.com/270x540.png?text=Detail+Film) | ![Pilih Kursi](https://via.placeholder.com/270x540.png?text=Peta+Kursi) | ![E-Ticket](https://via.placeholder.com/270x540.png?text=E-Ticket+QR) |
 
 
 ## ✨ Fitur Utama
 
-Aplikasi CinemaZone dilengkapi dengan berbagai fitur modern, antara lain:
+* **Autentikasi Pengguna Modern:**
+    * Registrasi dan Login pengguna yang aman menggunakan **Firebase Authentication**.
+    * Manajemen sesi otomatis, pengguna tetap login setelah aplikasi ditutup.
+    * Fitur update nama profil yang tersimpan di Firebase.
 
-* **Autentikasi Pengguna:**
-    * Registrasi dan Login pengguna menggunakan **Firebase Authentication**.
-    * Manajemen sesi yang aman (pengguna tetap login setelah aplikasi ditutup).
+* **Katalog Film Dinamis:**
+    * Menampilkan daftar film dari sumber data JSON eksternal.
+    * **Search Bar** untuk mencari film berdasarkan judul secara *real-time*.
+    * **Filter Kategori Genre** menggunakan `ChipGroup` yang dinamis.
+    * Tampilan detail film dalam dialog modern saat item diklik, lengkap dengan tombol untuk menonton trailer.
 
-* **Katalog Film:**
-    * Menampilkan daftar film yang sedang tayang dari sumber data JSON.
-    * Klik pada film untuk melihat deskripsi lengkap dan menonton trailer (membuka YouTube/Browser).
-
-* **Pemesanan Tiket:**
-    * Mekanisme pemesanan dengan memilih jumlah tiket.
-    * **Peta Kursi Visual** yang interaktif untuk memilih kursi.
-    * Validasi untuk memastikan jumlah kursi yang dipilih sesuai dengan jumlah tiket.
-    * Menyimpan data pesanan ke database **SQLite** lokal.
+* **Alur Pemesanan Tiket Lengkap:**
+    * Form pemesanan bertingkat yang logis: Pilih Film -> Lokasi -> Tanggal -> Jam Tayang.
+    * Pilihan yang saling bergantung (misal: pilihan tanggal muncul setelah lokasi dipilih).
+    * **Peta Kursi Visual** interaktif yang memungkinkan pengguna memilih kursi secara manual.
+    * Validasi untuk memastikan jumlah tiket sesuai dengan jumlah kursi yang dipilih.
 
 * **E-Ticket & QR Code:**
-    * Membuat **E-Ticket** untuk setiap pesanan yang berhasil.
-    * Generate **QR Code** unik yang berisi detail pesanan dalam format JSON.
-    * Fitur untuk **menyimpan E-Ticket** sebagai gambar ke galeri perangkat.
+    * Membuat **E-Ticket** digital untuk setiap pesanan yang berhasil.
+    * Generate **QR Code** unik yang berisi seluruh detail pesanan (dalam format JSON).
+    * Fitur untuk **menyimpan E-Ticket** sebagai gambar ke galeri perangkat pengguna.
 
-* **Manajemen Akun & Profil:**
-    * Halaman profil yang menampilkan data pengguna (nama & email) dari Firebase.
-    * Fitur **Ubah Nama** yang tersimpan di profil Firebase.
-    * Fitur **Riwayat Pesanan** untuk melihat semua tiket yang pernah dipesan.
-    * Tombol Logout yang aman.
+* **Manajemen Data Lokal & Akun:**
+    * **Wishlist:** Menyimpan film favorit secara lokal per pengguna menggunakan database **SQLite**.
+    * **Riwayat Pesanan:** Semua transaksi tiket disimpan di database **SQLite** dan dapat diakses melalui halaman profil.
+    * Halaman profil yang menampilkan data pengguna, serta menyediakan akses ke Riwayat Pesanan dan halaman Tentang Aplikasi.
 
-* **Fitur Tambahan:**
-    * **Wishlist** untuk menyimpan film yang ingin ditonton (menggunakan database SQLite).
-    * Halaman "Tentang Aplikasi".
-    * Desain UI yang bersih menggunakan Material Design 3.
+* **Pengalaman Pengguna (UX) yang Ditingkatkan:**
+    * **Animasi RecyclerView:** Item film muncul dengan efek *slide-up* dan *fade-in* yang elegan.
+    * **Animasi Interaktif:** Ikon "Wishlist" memberikan feedback animasi "pop" saat ditekan.
+    * **Transisi Halus:** Perpindahan antar halaman utama (Home, Order, dll.) menggunakan animasi *fade* yang lembut.
+    * Desain UI yang bersih dan modern mengadopsi prinsip-prinsip Material Design 3.
 
 ## 🛠️ Teknologi & Library yang Digunakan
 
-Proyek ini dibangun menggunakan teknologi dan library modern dalam ekosistem Android:
-
 * **Bahasa Pemrograman:** [Kotlin](https://kotlinlang.org/)
-* **Arsitektur:** Single-Activity Architecture, Manual Fragment Management
+* **Arsitektur:** Single-Activity Architecture, Manajemen Fragment Manual (`FragmentManager`)
 * **UI:** XML Layouts, [Material Design 3](https://m3.material.io/)
 * **Asynchronous:** [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) (`lifecycleScope`)
 * **Networking:**
-    * [Retrofit 2](https://square.github.io/retrofit/): Untuk komunikasi dengan API/sumber data JSON.
-    * [OkHttp 4](https://square.github.io/okhttp/): Sebagai HTTP client untuk Retrofit.
-    * [Gson](https://github.com/google/gson): Untuk parsing JSON ke objek Kotlin.
-* **Database Lokal:** [SQLite](https://www.sqlite.org/index.html) (melalui `SQLiteOpenHelper`) untuk menyimpan data Wishlist dan Riwayat Pesanan.
+    * [Retrofit 2](https://square.github.io/retrofit/): HTTP Client untuk mengambil data dari API/JSON.
+    * [Gson](https://github.com/google/gson): Parsing JSON menjadi objek Kotlin.
+* **Database Lokal:** [SQLite](https://www.sqlite.org/index.html) (melalui `SQLiteOpenHelper`)
 * **Autentikasi:** [Firebase Authentication](https://firebase.google.com/docs/auth)
 * **Image Loading:** [Glide](https://github.com/bumptech/glide)
-* **QR Code Generation:** [ZXing (Zebra Crossing)](https://github.com/zxing/zxing)
+* **QR Code Generation:** [ZXing (Zebra Crossing) Core](https://github.com/zxing/zxing)
+* **Animasi:** `ViewPropertyAnimator` dan `ObjectAnimator`.
 
 ## 🚀 Setup & Instalasi
 
@@ -78,22 +80,26 @@ Untuk menjalankan proyek ini di Android Studio, ikuti langkah-langkah berikut:
     git clone [https://github.com/](https://github.com/)[NamaUserGitHubAnda]/[NamaRepoAnda].git
     ```
 2.  **Buka di Android Studio**
-    * Buka Android Studio.
-    * Pilih "Open" dan arahkan ke folder proyek yang baru saja di-clone.
-    * Tunggu hingga Gradle selesai melakukan sinkronisasi.
+    * Buka Android Studio, pilih "Open", dan arahkan ke folder proyek.
+    * Tunggu hingga proses Gradle Sync selesai.
 
 3.  **PENTING: Setup Firebase (`google-services.json`)**
-    Repositori ini sengaja **tidak menyertakan** file `google-services.json` untuk alasan keamanan. Anda harus membuat proyek Firebase Anda sendiri untuk mendapatkan file ini.
+    Repositori ini sengaja **tidak menyertakan** file `google-services.json`. Anda harus membuat proyek Firebase Anda sendiri.
 
     * Pergi ke [Firebase Console](https://console.firebase.google.com/) dan buat proyek baru.
-    * Tambahkan aplikasi Android baru ke dalam proyek Firebase tersebut.
-    * Ikuti instruksi untuk mendaftarkan aplikasi (Anda akan memerlukan **package name** dan **SHA-1 certificate fingerprint** dari proyek ini).
-    * Unduh file `google-services.json` yang diberikan oleh Firebase.
-    * Salin file `google-services.json` tersebut ke dalam direktori **`app/`** pada proyek Android Studio Anda.
-    * Di Firebase Console, jangan lupa untuk mengaktifkan **Email/Password sign-in method** di bagian **Authentication**.
+    * Tambahkan aplikasi Android, masukkan **package name** dan **SHA-1 certificate fingerprint** dari komputer Anda.
+    * Unduh file `google-services.json` yang dihasilkan.
+    * Salin file tersebut ke dalam direktori **`app/`** pada proyek Android Studio Anda.
+    * Di Firebase Console, aktifkan **Email/Password sign-in method** di bagian **Authentication**.
 
-4.  **Build dan Jalankan Aplikasi**
-    * Setelah file `google-services.json` ada di tempat yang benar, Anda bisa langsung menekan tombol **Run 'app'** (ikon play hijau) di Android Studio.
+4.  **Siapkan Data Film (`movies.json`)**
+    * Aplikasi ini mengambil data dari sebuah URL file `movies.json`.
+    * Buka file `app/src/main/java/.../data/network/ApiService.kt`.
+    * Ubah URL placeholder di dalam anotasi `@GET` dengan URL raw dari file `movies.json` Anda sendiri yang sudah di-hosting (misalnya di GitHub Gist).
+
+5.  **Build dan Jalankan Aplikasi**
+    * Setelah `google-services.json` dan URL API sudah benar, klik tombol **Run 'app'** (ikon play hijau) di Android Studio.
+    * **Catatan:** Jika Anda mengalami error terkait database saat pertama kali menjalankan, coba **uninstall** aplikasi dari emulator/perangkat, lalu jalankan lagi. Ini untuk memastikan skema database SQLite yang baru dibuat dengan benar.
 
 ## 🧑‍💻 Kontributor
 
