@@ -14,7 +14,7 @@ _**Catatan:** Ganti link placeholder di bawah ini dengan URL screenshot nyata da
 
 | Halaman Login | Halaman Utama (Home) | Filter & Search |
 | :---: | :---: | :---: |
-| ![Login](https://drive.google.com/file/d/1wtDAXoJ1qtK8O14JUGLjGsHSYWms4O_0/view?usp=sharing) | ![Home](https://via.placeholder.com/270x540.png?text=Daftar+Film) | ![Filter](https://via.placeholder.com/270x540.png?text=Filter+Genre) |
+| ![Login](https://github.com/user-attachments/assets/e8f383b7-8884-498e-9eb8-1827428fbc76) | ![Home](https://via.placeholder.com/270x540.png?text=Daftar+Film) | ![Filter](https://via.placeholder.com/270x540.png?text=Filter+Genre) |
 
 | Detail Film | Pemesanan & Pemilihan Kursi | Riwayat & E-Ticket |
 | :---: | :---: | :---: |
