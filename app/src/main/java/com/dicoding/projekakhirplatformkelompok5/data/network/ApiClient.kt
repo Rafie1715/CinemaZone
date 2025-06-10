@@ -7,7 +7,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
 
-    // Base URL untuk raw.githubusercontent.com
     private const val BASE_URL_RAW_GITHUB = "https://rafie1715.github.io/cinemazone-api/"
 
     val instance: ApiService by lazy {

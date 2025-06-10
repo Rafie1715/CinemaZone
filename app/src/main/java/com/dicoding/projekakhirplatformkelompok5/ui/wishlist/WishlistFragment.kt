@@ -44,8 +44,6 @@ class WishlistFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // Selalu muat ulang data saat fragment ini ditampilkan untuk memastikan
-        // datanya selalu yang terbaru setelah ada perubahan dari Halaman Home.
         loadWishlistedMovies()
     }
 
@@ -54,11 +52,9 @@ class WishlistFragment : Fragment() {
             requireContext(),
             wishlistedMovies,
             onMovieClickListener = { movie ->
-                // Karena data di wishlist DB sudah lengkap, kita bisa langsung menampilkannya
                 MovieDetailDialogFragment.newInstance(movie).show(parentFragmentManager, MovieDetailDialogFragment.TAG)
             },
             onWishlistClickListener = { movie, shouldBeWishlisted ->
-                // Di halaman ini, klik ikon hati selalu berarti menghapus dari wishlist
                 if (!shouldBeWishlisted) {
                     handleRemoveFromWishlist(movie)
                 }
@@ -73,13 +69,11 @@ class WishlistFragment : Fragment() {
     private fun loadWishlistedMovies() {
         val user = auth.currentUser
         if (user == null) {
-            // Tampilkan pesan jika pengguna belum login
             binding.tvEmptyWishlist.text = "Login untuk melihat wishlist"
             updateUiVisibility(isDataEmpty = true)
             return
         }
 
-        // Ambil data dari database SQLite lokal berdasarkan UID pengguna
         val moviesFromDb = wishlistDbHelper.getWishlistMoviesByUser(user.uid)
 
         wishlistedMovies.clear()
@@ -87,7 +81,6 @@ class WishlistFragment : Fragment() {
 
         updateUiVisibility(wishlistedMovies.isEmpty())
 
-        // Update adapter dengan data baru dan set semua ikon hati menjadi "terisi"
         wishlistAdapter.setInitialWishlist(wishlistedMovies.map { it.id }.toSet())
         wishlistAdapter.notifyDataSetChanged()
     }
@@ -109,7 +102,6 @@ class WishlistFragment : Fragment() {
         wishlistDbHelper.removeMovieFromWishlist(movie.id, user.uid)
         Toast.makeText(requireContext(), "${movie.title} dihapus dari wishlist", Toast.LENGTH_SHORT).show()
 
-        // Muat ulang data untuk me-refresh tampilan setelah item dihapus
         loadWishlistedMovies()
     }
 

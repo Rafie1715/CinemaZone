@@ -22,16 +22,14 @@ class AuthActivity : AppCompatActivity() {
 
         auth = Firebase.auth
 
-        // Cek status login dari Firebase saat aplikasi dimulai
         if (auth.currentUser != null) {
             navigateToMain()
-            return // Hentikan eksekusi agar tidak menampilkan layout AuthActivity
+            return
         }
 
         binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Tampilkan LoginFragment sebagai default
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.auth_fragment_container, LoginFragment())
@@ -47,7 +45,7 @@ class AuthActivity : AppCompatActivity() {
     fun navigateToRegister() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.auth_fragment_container, RegisterFragment())
-            .addToBackStack(null) // Agar tombol back bisa kembali ke LoginFragment
+            .addToBackStack(null)
             .commit()
     }
 

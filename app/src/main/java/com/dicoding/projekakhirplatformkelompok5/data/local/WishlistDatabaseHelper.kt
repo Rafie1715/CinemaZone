@@ -15,10 +15,9 @@ class WishlistDatabaseHelper(context: Context) :
         private const val DATABASE_NAME = "CinemaZoneWishlist.db"
         private const val TABLE_WISHLIST = "wishlist"
 
-        // Kolom Tabel Wishlist
         private const val KEY_ROW_ID = "row_id"
         private const val KEY_MOVIE_ID = "movie_id"
-        private const val KEY_USER_ID = "user_id" // Diisi dengan UID dari Firebase Auth
+        private const val KEY_USER_ID = "user_id"
         private const val KEY_MOVIE_TITLE = "movie_title"
         private const val KEY_MOVIE_POSTER_PATH = "movie_poster_path"
         private const val KEY_MOVIE_OVERVIEW = "movie_overview"
@@ -42,7 +41,7 @@ class WishlistDatabaseHelper(context: Context) :
                 + "$KEY_MOVIE_TRAILER_URL TEXT,"
                 + "$KEY_ADDED_DATE INTEGER,"
                 + "$KEY_MOVIE_GENRES TEXT,"
-                + "UNIQUE ($KEY_MOVIE_ID, $KEY_USER_ID) ON CONFLICT REPLACE" // Mencegah duplikat film di wishlist per user
+                + "UNIQUE ($KEY_MOVIE_ID, $KEY_USER_ID) ON CONFLICT REPLACE"
                 + ")")
         db?.execSQL(createTableWishlist)
     }
@@ -63,7 +62,6 @@ class WishlistDatabaseHelper(context: Context) :
             put(KEY_MOVIE_RELEASE_DATE, movie.releaseDate)
             put(KEY_MOVIE_VOTE_AVERAGE, movie.voteAverage)
             put(KEY_MOVIE_TRAILER_URL, movie.trailerUrl)
-            // Ubah List<String> genre menjadi satu String dipisahkan koma
             put(KEY_MOVIE_GENRES, movie.genre?.joinToString(","))
             put(KEY_ADDED_DATE, System.currentTimeMillis())
         }
@@ -97,9 +95,7 @@ class WishlistDatabaseHelper(context: Context) :
         cursor?.use { c ->
             if (c.moveToFirst()) {
                 do {
-                    // Ambil string genre dari DB
                     val genresString = c.getString(c.getColumnIndexOrThrow(KEY_MOVIE_GENRES))
-                    // Ubah kembali menjadi List<String>
                     val genreList = genresString?.split(",") ?: emptyList()
 
                     val movie = Movie(
@@ -111,7 +107,7 @@ class WishlistDatabaseHelper(context: Context) :
                         voteAverage = c.getDouble(c.getColumnIndexOrThrow(KEY_MOVIE_VOTE_AVERAGE)),
                         trailerUrl = c.getString(c.getColumnIndexOrThrow(KEY_MOVIE_TRAILER_URL)),
                         genre = genreList,
-                        showtimes = null // Data showtimes tidak disimpan di wishlist, jadi beri nilai null
+                        showtimes = null
                     )
                     movieList.add(movie)
                 } while (c.moveToNext())

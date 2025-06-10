@@ -3,6 +3,7 @@ package com.dicoding.projekakhirplatformkelompok5.ui.home
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.dicoding.projekakhirplatformkelompok5.R
@@ -25,6 +26,7 @@ class MovieAdapter(
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         holder.bind(movieList[position])
+        holder.itemView.animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.item_slide_up_fade_in)
     }
 
     override fun getItemCount(): Int = movieList.size
@@ -60,7 +62,6 @@ class MovieAdapter(
                 .error(R.drawable.ic_launcher_background)
                 .into(binding.ivMoviePoster)
 
-            // Update ikon wishlist
             val isWishlisted = wishlistedMovieIds.contains(movie.id)
             if (isWishlisted) {
                 binding.ivAddToWishlistItem.setImageResource(R.drawable.ic_favorite_filled)
@@ -72,7 +73,17 @@ class MovieAdapter(
                 onMovieClickListener(movie)
             }
 
-            binding.ivAddToWishlistItem.setOnClickListener {
+            binding.ivAddToWishlistItem.setOnClickListener { view ->
+                view.animate()
+                    .scaleX(1.3f).scaleY(1.3f)
+                    .setDuration(150)
+                    .withEndAction {
+                        view.animate()
+                            .scaleX(1f).scaleY(1f)
+                            .setDuration(150)
+                            .start()
+                    }.start()
+
                 val currentlyWishlisted = wishlistedMovieIds.contains(movie.id)
                 onWishlistClickListener(movie, !currentlyWishlisted)
             }

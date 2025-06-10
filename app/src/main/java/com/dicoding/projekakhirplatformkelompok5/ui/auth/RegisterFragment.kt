@@ -47,11 +47,9 @@ class RegisterFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // Proses registrasi menggunakan Firebase
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
-                        // Registrasi berhasil, update nama tampilan (displayName) pengguna
                         val user = auth.currentUser
                         val profileUpdates = userProfileChangeRequest {
                             displayName = name
@@ -61,7 +59,6 @@ class RegisterFragment : Fragment() {
                             ?.addOnCompleteListener { profileTask ->
                                 if (profileTask.isSuccessful) {
                                     Toast.makeText(requireContext(), "Registrasi berhasil! Silakan login.", Toast.LENGTH_LONG).show()
-                                    // Arahkan ke halaman login
                                     (activity as? AuthActivity)?.navigateToLogin()
                                 }
                             }

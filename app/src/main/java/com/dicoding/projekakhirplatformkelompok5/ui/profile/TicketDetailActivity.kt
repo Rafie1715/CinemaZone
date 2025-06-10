@@ -21,6 +21,8 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import java.io.OutputStream
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 
 class TicketDetailActivity : AppCompatActivity() {
 
@@ -32,11 +34,9 @@ class TicketDetailActivity : AppCompatActivity() {
         binding = ActivityTicketDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Setup Toolbar dengan tombol back
         setSupportActionBar(binding.toolbarTicketDetail)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // Ambil data Order dari Intent yang dikirim oleh OrderHistoryActivity
         order = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(EXTRA_ORDER, Order::class.java)
         } else {
@@ -52,9 +52,7 @@ class TicketDetailActivity : AppCompatActivity() {
             finish()
         }
 
-        // Listener untuk tombol simpan
         binding.fabSaveTicket.setOnClickListener {
-            // Ambil bitmap dari layout tiket dan simpan ke galeri
             val bitmapToSave = getBitmapFromView(binding.ticketLayout)
             if (bitmapToSave != null) {
                 saveBitmapToGallery(this, bitmapToSave, "e-ticket-cinemazone-${order?.id}")
@@ -64,7 +62,6 @@ class TicketDetailActivity : AppCompatActivity() {
         }
     }
 
-    // Mengisi data pesanan ke semua TextView
     private fun populateUi(order: Order) {
         binding.tvTicketMovieTitle.text = order.movieTitle
         binding.tvTicketLocation.text = order.location
@@ -74,18 +71,17 @@ class TicketDetailActivity : AppCompatActivity() {
         binding.tvTicketOrderId.text = "ID Pesanan: #${order.id}"
     }
 
-    // Membuat QR Code dari data pesanan menggunakan ZXing
     private fun generateQrCode(order: Order) {
-        val jsonString = Gson().toJson(order) // Ubah seluruh objek Order menjadi string JSON
+        val jsonString = Gson().toJson(order)
         val writer = MultiFormatWriter()
         try {
             val bitMatrix = writer.encode(jsonString, BarcodeFormat.QR_CODE, 800, 800)
             val width = bitMatrix.width
             val height = bitMatrix.height
-            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+            val bitmap = createBitmap(width, height, Bitmap.Config.RGB_565)
             for (x in 0 until width) {
                 for (y in 0 until height) {
-                    bitmap.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+                    bitmap[x, y] = if (bitMatrix[x, y]) Color.BLACK else Color.WHITE
                 }
             }
             binding.ivQrCode.setImageBitmap(bitmap)
@@ -95,10 +91,9 @@ class TicketDetailActivity : AppCompatActivity() {
         }
     }
 
-    // Mengambil screenshot dari sebuah View (dalam kasus ini, CardView tiket)
     private fun getBitmapFromView(view: View): Bitmap? {
         return try {
-            val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+            val bitmap = createBitmap(view.width, view.height)
             val canvas = Canvas(bitmap)
             view.draw(canvas)
             bitmap
@@ -108,7 +103,6 @@ class TicketDetailActivity : AppCompatActivity() {
         }
     }
 
-    // Menyimpan gambar Bitmap ke galeri perangkat
     private fun saveBitmapToGallery(context: Context, bitmap: Bitmap, title: String) {
         val contentValues = ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, "$title.png")
@@ -143,7 +137,6 @@ class TicketDetailActivity : AppCompatActivity() {
         }
     }
 
-    // Handle klik tombol back di toolbar
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressedDispatcher.onBackPressed()

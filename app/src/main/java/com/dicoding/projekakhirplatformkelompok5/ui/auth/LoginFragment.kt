@@ -39,7 +39,6 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // Proses login menggunakan Firebase
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {

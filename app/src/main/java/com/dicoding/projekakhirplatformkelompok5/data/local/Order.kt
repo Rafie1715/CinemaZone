@@ -10,9 +10,9 @@ data class Order(
     val movieTitle: String,
     val quantity: Int,
     val seat: String,
-    val orderDate: String, // Tanggal kapan pesanan dibuat
+    val orderDate: String,
     val location: String,
-    val showDate: String, // Tanggal kapan filmnya tayang
+    val showDate: String,
     val showTime: String,
     val studio: String,
     val pricePerTicket: Int

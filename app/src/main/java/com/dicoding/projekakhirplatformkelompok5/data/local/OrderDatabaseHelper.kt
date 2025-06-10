@@ -14,9 +14,8 @@ class OrderDatabaseHelper(context: Context) :
         private const val DATABASE_NAME = "CinemaZoneOrder.db"
         private const val TABLE_ORDERS = "orders"
 
-        // Kolom Tabel Orders
         private const val KEY_ID = "id"
-        private const val KEY_USER_ID = "user_id" // Akan diisi dengan UID dari Firebase Auth
+        private const val KEY_USER_ID = "user_id"
         private const val KEY_MOVIE_TITLE = "movie_title"
         private const val KEY_LOCATION = "location"
         private const val KEY_SHOW_DATE = "show_date"
@@ -45,7 +44,6 @@ class OrderDatabaseHelper(context: Context) :
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        // Cara sederhana untuk development, hapus tabel dan buat lagi.
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_ORDERS")
         onCreate(db)
     }
