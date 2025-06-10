@@ -1,5 +1,7 @@
 # CinemaZone 🎬✨
 
+# Proyek ini disusun untuk Proyek Akhir Mata Kuliah Pemrograman Berbasis Platform
+
 ![Kotlin](https://img.shields.io/badge/Made%20with-Kotlin-blue?logo=kotlin)
 ![Platform](https://img.shields.io/badge/Platform-Android-green.svg?style=flat)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)
@@ -104,13 +106,3 @@ Untuk menjalankan proyek ini di Android Studio, ikuti langkah-langkah berikut:
 5.  **Build dan Jalankan Aplikasi**
     * Setelah `google-services.json` dan URL API sudah benar, klik tombol **Run 'app'** (ikon play hijau) di Android Studio.
     * **Catatan:** Jika Anda mengalami error terkait database saat pertama kali menjalankan, coba **uninstall** aplikasi dari emulator/perangkat, lalu jalankan lagi. Ini untuk memastikan skema database SQLite yang baru dibuat dengan benar.
-
-## 🧑‍💻 Kontributor
-
-Proyek ini disusun untuk Proyek Akhir Mata Kuliah Pemrograman Berbasis Platform dan dibuat oleh:
-
-* **[Rafie Rojagat Bachri / Kelompok 5]**
-
----
-
-Terima kasih telah mengunjungi repositori ini!
