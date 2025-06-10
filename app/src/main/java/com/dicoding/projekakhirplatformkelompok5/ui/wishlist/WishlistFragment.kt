@@ -1,19 +1,15 @@
 package com.dicoding.projekakhirplatformkelompok5.ui.wishlist
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.projekakhirplatformkelompok5.R
 import com.dicoding.projekakhirplatformkelompok5.data.local.WishlistDatabaseHelper
 import com.dicoding.projekakhirplatformkelompok5.data.model.Movie
-import com.dicoding.projekakhirplatformkelompok5.data.network.ApiClient
 import com.dicoding.projekakhirplatformkelompok5.databinding.FragmentWishlistBinding
 import com.dicoding.projekakhirplatformkelompok5.ui.home.MovieAdapter
 import com.dicoding.projekakhirplatformkelompok5.ui.home.MovieDetailDialogFragment
@@ -26,25 +22,18 @@ class WishlistFragment : Fragment() {
     private var _binding: FragmentWishlistBinding? = null
     private val binding get() = _binding!!
 
-    // Database helper untuk wishlist
-    private lateinit var wishlistDbHelper: WishlistDatabaseHelper
-
-    // Adapter untuk RecyclerView
-    private lateinit var wishlistAdapter: MovieAdapter
-
-    // List untuk menampung film yang di-wishlist
-    private val wishlistedMovies = mutableListOf<Movie>()
-
     private lateinit var auth: FirebaseAuth
+    private lateinit var wishlistDbHelper: WishlistDatabaseHelper
+    private lateinit var wishlistAdapter: MovieAdapter
+    private val wishlistedMovies = mutableListOf<Movie>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentWishlistBinding.inflate(inflater, container, false)
-        // Inisialisasi Database Helper
-        wishlistDbHelper = WishlistDatabaseHelper(requireContext())
         auth = Firebase.auth
+        wishlistDbHelper = WishlistDatabaseHelper(requireContext())
         return binding.root
     }
 
@@ -55,20 +44,21 @@ class WishlistFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // Muat atau refresh data setiap kali fragment ini menjadi terlihat oleh pengguna
+        // Selalu muat ulang data saat fragment ini ditampilkan untuk memastikan
+        // datanya selalu yang terbaru setelah ada perubahan dari Halaman Home.
         loadWishlistedMovies()
     }
 
     private fun setupRecyclerView() {
         wishlistAdapter = MovieAdapter(
             requireContext(),
-            wishlistedMovies, // Adapter akan menggunakan list ini
+            wishlistedMovies,
             onMovieClickListener = { movie ->
-                MovieDetailDialogFragment.newInstance(movie)
-                    .show(parentFragmentManager, MovieDetailDialogFragment.TAG)
+                // Karena data di wishlist DB sudah lengkap, kita bisa langsung menampilkannya
+                MovieDetailDialogFragment.newInstance(movie).show(parentFragmentManager, MovieDetailDialogFragment.TAG)
             },
             onWishlistClickListener = { movie, shouldBeWishlisted ->
-                // Di halaman ini, klik ikon hati selalu berarti menghapus
+                // Di halaman ini, klik ikon hati selalu berarti menghapus dari wishlist
                 if (!shouldBeWishlisted) {
                     handleRemoveFromWishlist(movie)
                 }
@@ -80,30 +70,30 @@ class WishlistFragment : Fragment() {
         }
     }
 
-    /**
-     * Fungsi utama untuk memuat film dari database SQLite
-     * dan memperbarui UI.
-     */
     private fun loadWishlistedMovies() {
         val user = auth.currentUser
-
         if (user == null) {
+            // Tampilkan pesan jika pengguna belum login
             binding.tvEmptyWishlist.text = "Login untuk melihat wishlist"
-            binding.tvEmptyWishlist.visibility = View.VISIBLE
-            binding.recyclerViewWishlist.visibility = View.GONE
-            wishlistedMovies.clear()
-            wishlistAdapter.notifyDataSetChanged()
+            updateUiVisibility(isDataEmpty = true)
             return
         }
 
-        val userId = user.email!!
-        Log.d("WishlistFragment", "Loading wishlist for user: $userId")
-        val moviesFromDb = wishlistDbHelper.getWishlistMoviesByUser(userId)
+        // Ambil data dari database SQLite lokal berdasarkan UID pengguna
+        val moviesFromDb = wishlistDbHelper.getWishlistMoviesByUser(user.uid)
 
         wishlistedMovies.clear()
         wishlistedMovies.addAll(moviesFromDb)
 
-        if (wishlistedMovies.isEmpty()) {
+        updateUiVisibility(wishlistedMovies.isEmpty())
+
+        // Update adapter dengan data baru dan set semua ikon hati menjadi "terisi"
+        wishlistAdapter.setInitialWishlist(wishlistedMovies.map { it.id }.toSet())
+        wishlistAdapter.notifyDataSetChanged()
+    }
+
+    private fun updateUiVisibility(isDataEmpty: Boolean) {
+        if (isDataEmpty) {
             binding.tvEmptyWishlist.text = getString(R.string.empty_wishlist)
             binding.tvEmptyWishlist.visibility = View.VISIBLE
             binding.recyclerViewWishlist.visibility = View.GONE
@@ -111,23 +101,16 @@ class WishlistFragment : Fragment() {
             binding.tvEmptyWishlist.visibility = View.GONE
             binding.recyclerViewWishlist.visibility = View.VISIBLE
         }
-
-        wishlistAdapter.setInitialWishlist(wishlistedMovies.map { it.id }.toSet())
-        wishlistAdapter.notifyDataSetChanged()
     }
 
-    /**
-     * Fungsi yang dipanggil saat ikon hati di salah satu item diklik.
-     */
     private fun handleRemoveFromWishlist(movie: Movie) {
         val user = auth.currentUser ?: return
-        val userId = user.email!!
 
-        val rowsDeleted = wishlistDbHelper.removeMovieFromWishlist(movie.id, userId)
-        if (rowsDeleted > 0) {
-            Toast.makeText(requireContext(), "${movie.title} dihapus dari wishlist", Toast.LENGTH_SHORT).show()
-            loadWishlistedMovies()
-        }
+        wishlistDbHelper.removeMovieFromWishlist(movie.id, user.uid)
+        Toast.makeText(requireContext(), "${movie.title} dihapus dari wishlist", Toast.LENGTH_SHORT).show()
+
+        // Muat ulang data untuk me-refresh tampilan setelah item dihapus
+        loadWishlistedMovies()
     }
 
     override fun onDestroyView() {

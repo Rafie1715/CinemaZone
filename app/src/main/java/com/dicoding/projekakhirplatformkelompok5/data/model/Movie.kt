@@ -25,5 +25,11 @@ data class Movie(
     val voteAverage: Double,
 
     @SerializedName("trailer_url")
-    val trailerUrl: String? = null
+    val trailerUrl: String? = null,
+
+    @SerializedName("genre")
+    val genre: List<String>?,
+
+    @SerializedName("showtimes")
+    val showtimes: List<Showtime>?
 ) : Parcelable

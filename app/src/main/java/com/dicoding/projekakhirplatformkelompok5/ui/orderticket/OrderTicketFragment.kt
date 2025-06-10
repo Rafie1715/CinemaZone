@@ -1,27 +1,32 @@
 package com.dicoding.projekakhirplatformkelompok5.ui.orderticket
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.dicoding.projekakhirplatformkelompok5.R
 import com.dicoding.projekakhirplatformkelompok5.data.local.Order
 import com.dicoding.projekakhirplatformkelompok5.data.local.OrderDatabaseHelper
+import com.dicoding.projekakhirplatformkelompok5.data.model.Movie
+import com.dicoding.projekakhirplatformkelompok5.data.model.Show
+import com.dicoding.projekakhirplatformkelompok5.data.model.Showtime
+import com.dicoding.projekakhirplatformkelompok5.data.model.TimeSlot
 import com.dicoding.projekakhirplatformkelompok5.data.network.ApiClient
 import com.dicoding.projekakhirplatformkelompok5.databinding.FragmentOrderTicketBinding
 import com.dicoding.projekakhirplatformkelompok5.ui.profile.TicketDetailActivity
+import com.google.android.material.chip.Chip
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -30,30 +35,23 @@ class OrderTicketFragment : Fragment() {
 
     private var _binding: FragmentOrderTicketBinding? = null
     private val binding get() = _binding!!
-    private lateinit var dbHelper: OrderDatabaseHelper
-    private var availableMoviesTitle = mutableListOf<String>()
-    private lateinit var orderHistoryAdapter: OrderHistoryAdapter
-    private var selectedSeats = listOf<String>()
 
-    // Instance Firebase Auth sudah dideklarasikan di sini
+    private lateinit var dbHelper: OrderDatabaseHelper
+    private lateinit var orderHistoryAdapter: OrderHistoryAdapter
     private lateinit var auth: FirebaseAuth
+
+    private var fullMovieList = listOf<Movie>()
+    private var selectedMovie: Movie? = null
+    private var selectedShowtime: Showtime? = null
+    private var selectedShow: Show? = null
+    private var selectedTimeSlot: TimeSlot? = null
+    private var selectedSeats = listOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setFragmentResultListener(SeatPickerDialogFragment.REQUEST_KEY) { _, bundle ->
-            val result = bundle.getStringArrayList(SeatPickerDialogFragment.RESULT_SEATS)
-            result?.let {
-                selectedSeats = it
-                binding.tvSelectedSeats.text = "Kursi Dipilih: ${it.joinToString(", ")}"
-                binding.tvSelectedSeats.visibility = View.VISIBLE
-            }
-        }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentOrderTicketBinding.inflate(inflater, container, false)
         dbHelper = OrderDatabaseHelper(requireContext())
         auth = Firebase.auth
@@ -62,158 +60,194 @@ class OrderTicketFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.tvSelectedSeats.visibility = View.GONE
+
+        setFragmentResultListener(SeatPickerDialogFragment.REQUEST_KEY) { _, bundle ->
+            val result = bundle.getStringArrayList(SeatPickerDialogFragment.RESULT_SEATS)
+            result?.let {
+                selectedSeats = it
+                binding.tvSelectedSeats.text = "Kursi Dipilih: ${it.joinToString(", ")}"
+                binding.tvSelectedSeats.visibility = View.VISIBLE
+            }
+        }
+
+        resetAllViews()
         setupOrderHistoryRecyclerView()
-        setupMovieSpinner()
         fetchMoviesForSpinner()
 
         binding.btnSelectSeats.setOnClickListener {
-            val quantityText = binding.etQuantity.text.toString()
-            val quantity = quantityText.toIntOrNull() ?: 0
-
-            if (quantity <= 0) {
-                Toast.makeText(requireContext(), "Silakan masukkan jumlah tiket terlebih dahulu", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            val quantity = binding.etQuantity.text.toString().toIntOrNull() ?: 0
+            if (quantity > 0) {
+                SeatPickerDialogFragment.newInstance(quantity).show(parentFragmentManager, SeatPickerDialogFragment.TAG)
+            } else {
+                Toast.makeText(requireContext(), "Masukkan jumlah tiket terlebih dahulu", Toast.LENGTH_SHORT).show()
             }
-
-            SeatPickerDialogFragment.newInstance(quantity)
-                .show(parentFragmentManager, SeatPickerDialogFragment.TAG)
         }
 
-        binding.btnProcessOrder.setOnClickListener {
-            processOrder()
-        }
+        binding.btnProcessOrder.setOnClickListener { processOrder() }
         loadOrderHistory()
     }
 
-    // Fungsi fetchMoviesForSpinner dan setup lainnya tidak perlu diubah
-    private fun setupMovieSpinner() {
-        val movieAdapterSpinner = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            listOf(getString(R.string.choose_film_prompt))
-        )
-        movieAdapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerMovieSelection.adapter = movieAdapterSpinner
-    }
+    private fun resetAllViews(step: Int = 0) {
+        binding.layoutSpinnerLocation.visibility = if (step >= 1) View.VISIBLE else View.GONE
+        binding.layoutSpinnerDate.visibility = if (step >= 2) View.VISIBLE else View.GONE
+        binding.layoutTimeSelection.visibility = if (step >= 3) View.VISIBLE else View.GONE
+        binding.cardOrderSummary.visibility = if (step >= 4) View.VISIBLE else View.GONE
+        binding.layoutSeatSelection.visibility = if (step >= 4) View.VISIBLE else View.GONE
+        binding.btnProcessOrder.visibility = if (step >= 4) View.VISIBLE else View.GONE
 
-    // ... (Fungsi setupOrderHistoryRecyclerView dan fetchMoviesForSpinner tetap sama) ...
-    private fun setupOrderHistoryRecyclerView() {
-        orderHistoryAdapter = OrderHistoryAdapter(emptyList()) { selectedOrder ->
-            // 1. Buat Intent untuk membuka halaman detail tiket
-            val intent = Intent(activity, TicketDetailActivity::class.java)
-
-            // 2. Selipkan data pesanan yang di-klik ke dalam Intent
-            intent.putExtra(TicketDetailActivity.EXTRA_ORDER, selectedOrder)
-
-            // 3. Mulai Activity baru
-            startActivity(intent)
-        }
-        binding.recyclerViewOrderHistory.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = orderHistoryAdapter
+        if (step < 1) { selectedMovie = null; if(view != null) binding.spinnerLocation.setText("", false) }
+        if (step < 2) { selectedShowtime = null; if(view != null) binding.spinnerDate.setText("", false) }
+        if (step < 3) { selectedShow = null; binding.chipGroupTime.removeAllViews() }
+        if (step < 4) {
+            selectedTimeSlot = null
+            binding.etQuantity.text?.clear()
+            binding.tvSelectedSeats.text = ""
+            binding.tvSelectedSeats.visibility = View.GONE
+            selectedSeats = emptyList()
         }
     }
 
     private fun fetchMoviesForSpinner() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val response = ApiClient.instance.getAllMoviesDirect()
+                val response = ApiClient.instance.getAllMovies()
                 if (response.isSuccessful) {
-                    response.body()?.let { movies ->
-                        availableMoviesTitle.clear()
-                        availableMoviesTitle.add(getString(R.string.choose_film_prompt))
-                        availableMoviesTitle.addAll(movies.map { it.title })
-                        val movieSpinnerAdapter = ArrayAdapter(
-                            requireContext(),
-                            android.R.layout.simple_spinner_item,
-                            availableMoviesTitle
-                        )
-                        movieSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                        binding.spinnerMovieSelection.adapter = movieSpinnerAdapter
-                    }
-                } else {
-                    Toast.makeText(requireContext(), "Gagal memuat daftar film", Toast.LENGTH_SHORT).show()
+                    fullMovieList = response.body() ?: emptyList()
+                    val movieTitles = mutableListOf("Pilih Film")
+                    movieTitles.addAll(fullMovieList.map { it.title })
+                    val movieAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, movieTitles)
+                    binding.spinnerMovie.setAdapter(movieAdapter)
                 }
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error memuat film: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Gagal memuat film: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.spinnerMovie.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+            resetAllViews()
+            if (position > 0) {
+                selectedMovie = fullMovieList[position - 1]
+                updateLocationSpinner()
             }
         }
     }
 
-    /**
-     * REVISI: Menggunakan Firebase Auth untuk mendapatkan ID pengguna.
-     */
+    private fun updateLocationSpinner() {
+        resetAllViews(step = 1)
+        val locations = mutableListOf("Pilih Lokasi")
+        selectedMovie?.showtimes?.let { showtimes ->
+            locations.addAll(showtimes.map { it.location })
+        }
+        val locationAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, locations)
+        binding.spinnerLocation.setAdapter(locationAdapter)
+        binding.spinnerLocation.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+            resetAllViews(step = 1)
+            if (position > 0) {
+                selectedShowtime = selectedMovie?.showtimes?.get(position - 1)
+                updateDateSpinner()
+            }
+        }
+    }
+
+    private fun updateDateSpinner() {
+        resetAllViews(step = 2)
+        val dates = mutableListOf("Pilih Tanggal")
+        selectedShowtime?.shows?.let { shows ->
+            dates.addAll(shows.map { it.date })
+        }
+        val dateAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, dates)
+        binding.spinnerDate.setAdapter(dateAdapter)
+        binding.spinnerDate.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+            resetAllViews(step = 2)
+            if (position > 0) {
+                selectedShow = selectedShowtime?.shows?.get(position - 1)
+                updateTimeChips()
+            }
+        }
+    }
+
+    private fun updateTimeChips() {
+        resetAllViews(step = 3)
+        binding.chipGroupTime.removeAllViews()
+        selectedShow?.times?.forEach { timeSlot ->
+            val chip = Chip(context).apply {
+                text = timeSlot.time
+                isCheckable = true
+                isClickable = true
+            }
+            chip.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    selectedTimeSlot = timeSlot
+                    updateOrderSummary()
+                    resetAllViews(step = 4)
+                }
+            }
+            binding.chipGroupTime.addView(chip)
+        }
+    }
+
+    private fun updateOrderSummary() {
+        binding.tvStudioInfo.text = "Studio: ${selectedTimeSlot?.studio}"
+        val format = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+        format.maximumFractionDigits = 0
+        binding.tvPriceInfo.text = "Harga per Tiket: ${format.format(selectedShowtime?.price)}"
+    }
+
     private fun processOrder() {
-        val selectedMovieTitle = binding.spinnerMovieSelection.selectedItem.toString()
-        val quantityText = binding.etQuantity.text.toString()
-        val quantity = quantityText.toIntOrNull() ?: 0
-
-        // Validasi
-        if (selectedMovieTitle == getString(R.string.choose_film_prompt)) { /* ... */ return }
-        if (quantity <= 0) { /* ... */ return }
-        if (selectedSeats.isEmpty() || selectedSeats.size != quantity) { /* ... */ return }
-
-        // REVISI: Dapatkan pengguna dari Firebase Auth
         val user = auth.currentUser
-        if (user == null) {
-            Toast.makeText(requireContext(), "Sesi tidak valid, silakan login kembali.", Toast.LENGTH_SHORT).show()
+        val quantity = binding.etQuantity.text.toString().toIntOrNull() ?: 0
+        if (user == null || selectedMovie == null || selectedShowtime == null || selectedShow == null || selectedTimeSlot == null || quantity <= 0 || selectedSeats.size != quantity) {
+            Toast.makeText(requireContext(), "Harap lengkapi semua pilihan dengan benar.", Toast.LENGTH_LONG).show()
             return
         }
-        val userEmail = user.email!! // Gunakan email dari Firebase sebagai ID
-
-        // Proses penyimpanan ke DB
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        val currentDateAndTime: String = sdf.format(Date())
-        val seatsString = selectedSeats.joinToString(", ")
 
         val order = Order(
-            userId = userEmail,
-            movieTitle = selectedMovieTitle,
+            userId = user.uid,
+            movieTitle = selectedMovie!!.title,
             quantity = quantity,
-            seat = seatsString,
-            orderDate = currentDateAndTime
+            seat = selectedSeats.joinToString(", "),
+            orderDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()),
+            location = selectedShowtime!!.location,
+            showDate = selectedShow!!.date,
+            showTime = selectedTimeSlot!!.time,
+            studio = selectedTimeSlot!!.studio,
+            pricePerTicket = selectedShowtime!!.price
         )
 
         val successId = dbHelper.addOrder(order)
         if (successId > -1) {
             Toast.makeText(requireContext(), "Tiket berhasil dipesan!", Toast.LENGTH_LONG).show()
-            // Reset form
-            binding.spinnerMovieSelection.setSelection(0)
-            binding.etQuantity.text.clear()
-            binding.tvSelectedSeats.text = ""
-            binding.tvSelectedSeats.visibility = View.GONE
-            selectedSeats = emptyList()
-
+            binding.spinnerMovie.setText("", false)
+            resetAllViews()
             loadOrderHistory()
         } else {
-            Toast.makeText(requireContext(), "Gagal memesan tiket.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Gagal menyimpan pesanan.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    /**
-     * REVISI: Menggunakan Firebase Auth untuk mendapatkan ID pengguna.
-     */
-    private fun loadOrderHistory() {
-        // REVISI: Dapatkan pengguna dari Firebase Auth
-        val user = auth.currentUser
+    private fun setupOrderHistoryRecyclerView() {
+        orderHistoryAdapter = OrderHistoryAdapter(emptyList()) { selectedOrder ->
+            val intent = Intent(activity, TicketDetailActivity::class.java)
+            intent.putExtra(TicketDetailActivity.EXTRA_ORDER, selectedOrder)
+            startActivity(intent)
+        }
+        binding.recyclerViewOrderHistory.adapter = orderHistoryAdapter
+        binding.recyclerViewOrderHistory.layoutManager = LinearLayoutManager(requireContext())
+    }
 
+    private fun loadOrderHistory() {
+        val user = auth.currentUser
         if (user != null) {
-            val email = user.email!!
-            val orders = dbHelper.getAllOrdersByUser(email)
+            val orders = dbHelper.getAllOrdersByUser(user.uid)
             if (orders.isNotEmpty()) {
                 orderHistoryAdapter.updateOrders(orders)
                 binding.recyclerViewOrderHistory.visibility = View.VISIBLE
                 binding.tvNoOrderHistory.visibility = View.GONE
             } else {
-                orderHistoryAdapter.updateOrders(emptyList())
                 binding.recyclerViewOrderHistory.visibility = View.GONE
                 binding.tvNoOrderHistory.visibility = View.VISIBLE
-                binding.tvNoOrderHistory.text = "Belum ada riwayat pesanan."
             }
         } else {
-            // Jika user null (tidak login)
-            orderHistoryAdapter.updateOrders(emptyList())
             binding.recyclerViewOrderHistory.visibility = View.GONE
             binding.tvNoOrderHistory.visibility = View.VISIBLE
             binding.tvNoOrderHistory.text = "Login untuk melihat riwayat pesanan."

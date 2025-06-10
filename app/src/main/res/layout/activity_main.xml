@@ -21,7 +21,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:titleTextColor="?attr/colorOnPrimary"
-            app:title="@string/title_home" /> </com.google.android.material.appbar.AppBarLayout>
+            app:title="@string/title_home" />
+    </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
         android:id="@+id/fragment_container"

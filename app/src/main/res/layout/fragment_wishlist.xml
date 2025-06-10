@@ -21,7 +21,8 @@
         android:id="@+id/recycler_view_wishlist"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
+        android:paddingHorizontal="8dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@id/tv_wishlist_title"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -40,5 +41,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="visible"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

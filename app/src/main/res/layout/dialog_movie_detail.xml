@@ -1,51 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="?attr/colorSurface"
-    android:padding="20dp">
+    android:layout_margin="16dp"
+    app:cardCornerRadius="16dp">
 
-    <ImageView
-        android:id="@+id/iv_detail_poster"
-        android:layout_width="150dp"
-        android:layout_height="225dp"
-        android:scaleType="centerCrop"
-        android:layout_gravity="center_horizontal"
-        tools:src="@tools:sample/avatars"
-        android:contentDescription="@string/movie_poster_description"/>
-
-    <TextView
-        android:id="@+id/tv_detail_title"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:textAppearance="?attr/textAppearanceHeadline5"
-        tools:text="Movie Title" />
+        android:orientation="vertical"
+        android:padding="20dp">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="12dp">
+        <ImageView
+            android:id="@+id/iv_detail_poster"
+            android:layout_width="150dp"
+            android:layout_height="225dp"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center_horizontal"
+            tools:src="@tools:sample/avatars"
+            android:contentDescription="@string/movie_poster_description"/>
+
         <TextView
-            android:id="@+id/tv_detail_overview"
+            android:id="@+id/tv_detail_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceBody1"
-            tools:text="This is a long description of the movie that will explain the plot in great detail. It might be several paragraphs long, so a ScrollView is necessary to ensure all the content is accessible to the user without overflowing the dialog bounds." />
-    </ScrollView>
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            tools:text="Movie Title" />
 
-    <Button
-        android:id="@+id/btn_watch_trailer"
-        style="@style/Widget.Material3.Button.Icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:text="@string/tonton_trailer"
-        app:icon="@drawable/ic_play_button" />
-</LinearLayout>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginTop="12dp">
+            <TextView
+                android:id="@+id/tv_detail_overview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBody1"
+                tools:text="This is a long description..." />
+        </ScrollView>
+
+        <Button
+            android:id="@+id/btn_watch_trailer"
+            style="@style/Widget.Material3.Button.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:text="@string/tonton_trailer"
+            app:icon="@android:drawable/ic_media_play" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

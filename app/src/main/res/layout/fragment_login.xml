@@ -18,10 +18,17 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/login"
-        android:textSize="24sp"
+        android:text="@string/selamat_datang"
+        android:textAppearance="?attr/textAppearanceHeadline5"
         android:textStyle="bold"
-        android:layout_marginBottom="24dp"/>
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_untuk_melanjutkan_ke_cinemazone"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:layout_marginBottom="32dp"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"

@@ -35,7 +35,7 @@
             android:id="@+id/iv_app_logo"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:src="@drawable/ic_cinema"
+            android:src="@mipmap/ic_launcher_round"
             android:contentDescription="@string/app_logo"/>
 
         <TextView
@@ -46,10 +46,17 @@
             android:layout_marginTop="16dp"/>
 
         <TextView
+            android:id="@+id/tv_app_version"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            tools:text="Versi 1.0.0"
+            android:textAppearance="?attr/textAppearanceBody2"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/dibuat_sebagai_proyek_akhir_mata_kuliah_pemrograman_berbasis_platform"
+            android:gravity="center"
             android:textAppearance="?attr/textAppearanceTitleMedium"
             android:layout_marginTop="32dp"/>
 

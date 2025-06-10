@@ -1,20 +1,20 @@
 package com.dicoding.projekakhirplatformkelompok5.ui.home
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.dicoding.projekakhirplatformkelompok5.R
 import com.dicoding.projekakhirplatformkelompok5.data.local.WishlistDatabaseHelper
 import com.dicoding.projekakhirplatformkelompok5.data.model.Movie
 import com.dicoding.projekakhirplatformkelompok5.data.network.ApiClient
 import com.dicoding.projekakhirplatformkelompok5.databinding.FragmentHomeBinding
+import com.google.android.material.chip.Chip
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -22,21 +22,19 @@ import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
-    // Gunakan _binding yang nullable
     private var _binding: FragmentHomeBinding? = null
-    // Properti 'binding' hanya boleh diakses antara onCreateView dan onDestroyView.
     private val binding get() = _binding!!
 
+    private val fullMovieList = mutableListOf<Movie>()
+    private val displayedMovieList = mutableListOf<Movie>()
     private lateinit var movieAdapter: MovieAdapter
-    private val movieList = mutableListOf<Movie>()
     private lateinit var wishlistDbHelper: WishlistDatabaseHelper
-
     private lateinit var auth: FirebaseAuth
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    private var currentQuery: String = ""
+    private var currentGenre: String = "Semua"
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         wishlistDbHelper = WishlistDatabaseHelper(requireContext())
         auth = Firebase.auth
@@ -46,26 +44,85 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+        setupSearchListener()
         fetchMovies()
     }
 
     private fun setupRecyclerView() {
         movieAdapter = MovieAdapter(
             requireContext(),
-            movieList,
+            displayedMovieList,
             onMovieClickListener = { movie ->
-                // === UBAH BAGIAN INI ===
-                // Bukan lagi menampilkan Toast, tapi menampilkan DialogFragment
-                MovieDetailDialogFragment.newInstance(movie)
-                    .show(parentFragmentManager, MovieDetailDialogFragment.TAG)
+                MovieDetailDialogFragment.newInstance(movie).show(parentFragmentManager, MovieDetailDialogFragment.TAG)
             },
             onWishlistClickListener = { movie, addToWishlist ->
                 handleWishlistAction(movie, addToWishlist)
             }
         )
-        binding.recyclerViewMovies.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = movieAdapter
+        binding.recyclerViewMovies.adapter = movieAdapter
+        binding.recyclerViewMovies.layoutManager = LinearLayoutManager(context)
+    }
+
+    private fun setupSearchListener() {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                currentQuery = newText.orEmpty()
+                filterMovies()
+                return true
+            }
+        })
+    }
+
+    private fun setupGenreChips() {
+        val genres = fullMovieList.flatMap { it.genre ?: emptyList() }.distinct().sorted()
+        binding.chipGroupGenre.removeAllViews()
+
+        fun createChip(genreName: String): Chip {
+            return Chip(context).apply {
+                text = genreName
+                isCheckable = true
+                isClickable = true
+                setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        currentGenre = genreName
+                        filterMovies()
+                    }
+                }
+            }
+        }
+
+        val allChip = createChip("Semua").apply { isChecked = true }
+        binding.chipGroupGenre.addView(allChip)
+        genres.forEach { genre ->
+            binding.chipGroupGenre.addView(createChip(genre))
+        }
+        binding.chipGroupGenre.isSingleSelection = true
+    }
+
+    private fun filterMovies() {
+        var filteredList: List<Movie> = fullMovieList
+        if (currentGenre != "Semua") {
+            filteredList = filteredList.filter { it.genre?.contains(currentGenre) == true }
+        }
+        if (currentQuery.isNotEmpty()) {
+            filteredList = filteredList.filter { it.title.contains(currentQuery, ignoreCase = true) }
+        }
+
+        displayedMovieList.clear()
+        displayedMovieList.addAll(filteredList)
+        movieAdapter.notifyDataSetChanged()
+
+        if (displayedMovieList.isEmpty()) {
+            binding.recyclerViewMovies.visibility = View.GONE
+            binding.tvErrorHome.text = "Film tidak ditemukan."
+            binding.tvErrorHome.visibility = View.VISIBLE
+        } else {
+            binding.recyclerViewMovies.visibility = View.VISIBLE
+            binding.tvErrorHome.visibility = View.GONE
         }
     }
 
@@ -74,47 +131,32 @@ class HomeFragment : Fragment() {
         binding.tvErrorHome.visibility = View.GONE
         binding.recyclerViewMovies.visibility = View.GONE
 
-        // Gunakan viewLifecycleOwner.lifecycleScope untuk Coroutine yang sadar lifecycle View
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val response = ApiClient.instance.getAllMoviesDirect()
+                val response = ApiClient.instance.getAllMovies()
                 if (response.isSuccessful) {
                     response.body()?.let { movies ->
-                        // Pastikan view masih ada sebelum update UI
                         if (_binding != null) {
-                            movieList.clear()
-                            movieList.addAll(movies)
-                            movieAdapter.notifyDataSetChanged()
-                            loadInitialWishlistStatus() // Panggil setelah movie list terisi
-                            binding.recyclerViewMovies.visibility = View.VISIBLE
-                        }
-                    } ?: run {
-                        if (_binding != null) {
-                            binding.tvErrorHome.text = getString(R.string.no_movies_found)
-                            binding.tvErrorHome.visibility = View.VISIBLE
+                            fullMovieList.clear()
+                            fullMovieList.addAll(movies)
+                            setupGenreChips()
+                            filterMovies()
+                            loadInitialWishlistStatus()
                         }
                     }
                 } else {
-                    Log.e("HomeFragment", "Error: ${response.code()} - ${response.message()}")
                     if (_binding != null) {
-                        binding.tvErrorHome.text = "${getString(R.string.failed_to_load_movies)} (Error: ${response.code()})"
+                        binding.tvErrorHome.text = "Gagal memuat: Error ${response.code()}"
                         binding.tvErrorHome.visibility = View.VISIBLE
                     }
                 }
             } catch (e: Exception) {
-                // JobCancellationException akan masuk ke sini jika coroutine dibatalkan
-                // Kita tidak perlu menganggapnya sebagai error fatal
-                if (e is kotlinx.coroutines.CancellationException) {
-                    Log.i("HomeFragment", "Fetch movies job was cancelled.")
-                } else {
+                if (_binding != null && e !is kotlinx.coroutines.CancellationException) {
+                    binding.tvErrorHome.text = "Gagal terhubung. Periksa koneksi internet Anda."
+                    binding.tvErrorHome.visibility = View.VISIBLE
                     Log.e("HomeFragment", "Exception: ${e.message}", e)
-                    if (_binding != null) {
-                        binding.tvErrorHome.text = "${getString(R.string.failed_to_load_movies)} (Network Error)"
-                        binding.tvErrorHome.visibility = View.VISIBLE
-                    }
                 }
             } finally {
-                // Lakukan pengecekan null di sini juga, ini yang paling penting
                 if (_binding != null) {
                     binding.progressBarHome.visibility = View.GONE
                 }
@@ -125,10 +167,9 @@ class HomeFragment : Fragment() {
     private fun loadInitialWishlistStatus() {
         val user = auth.currentUser
         val wishlistedIds = mutableSetOf<Int>()
-
         if (user != null) {
-            val userId = user.email!! // Asumsi email selalu ada jika sudah login
-            movieList.forEach { movie ->
+            val userId = user.uid
+            fullMovieList.forEach { movie ->
                 if (wishlistDbHelper.isMovieInWishlist(movie.id, userId)) {
                     wishlistedIds.add(movie.id)
                 }
@@ -139,13 +180,11 @@ class HomeFragment : Fragment() {
 
     private fun handleWishlistAction(movie: Movie, addToWishlist: Boolean) {
         val user = auth.currentUser
-
         if (user == null) {
             Toast.makeText(requireContext(), "Silakan login untuk menggunakan wishlist", Toast.LENGTH_SHORT).show()
             return
         }
-        val userId = user.email!!
-
+        val userId = user.uid
         if (addToWishlist) {
             wishlistDbHelper.addMovieToWishlist(movie, userId)
             Toast.makeText(requireContext(), "${movie.title} ditambahkan ke wishlist", Toast.LENGTH_SHORT).show()
@@ -158,7 +197,6 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // _binding di-set null di sini, ini adalah praktik yang benar.
         _binding = null
     }
 }

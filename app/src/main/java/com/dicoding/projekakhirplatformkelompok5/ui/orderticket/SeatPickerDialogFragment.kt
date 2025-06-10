@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.GridLayout
-import android.widget.GridLayout.LayoutParams
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
@@ -22,38 +21,34 @@ class SeatPickerDialogFragment : DialogFragment() {
     private var ticketCount = 0
     private val selectedSeats = mutableListOf<String>()
 
-    // Anggap beberapa kursi sudah terisi
     private val occupiedSeats = listOf("A3", "A4", "C5", "D1", "D2")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Ambil jumlah tiket dari argumen
         ticketCount = arguments?.getInt(ARG_TICKET_COUNT) ?: 0
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = DialogSeatPickerBinding.inflate(inflater, container, false)
         return binding.root
     }
 
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-
         setupSeatGrid()
         updateInfoText()
 
         binding.btnDoneSelectingSeats.setOnClickListener {
-            // Kirim hasil kembali ke OrderTicketFragment
             setFragmentResult(
                 REQUEST_KEY,
-                bundleOf(RESULT_SEATS to ArrayList(selectedSeats)) // Kirim sebagai ArrayList
+                bundleOf(RESULT_SEATS to ArrayList(selectedSeats))
             )
-            dismiss() // Tutup dialog
+            dismiss()
         }
     }
 
@@ -62,33 +57,29 @@ class SeatPickerDialogFragment : DialogFragment() {
         val cols = 8
 
         binding.gridLayoutSeats.rowCount = rows
-        binding.gridLayoutSeats.columnCount = cols + 1 // +1 untuk space di tengah
+        binding.gridLayoutSeats.columnCount = cols + 1
 
         for (i in 0 until rows) {
-            for (j in 0 until cols + 1) { // Looping sampai cols + 1
-                // Beri jarak di tengah untuk jalan pada kolom ke-4 (indeks 4)
+            for (j in 0 until cols + 1) {
                 if (j == 4) {
                     val space = View(context)
-                    // Gunakan GridLayout.LayoutParams
                     val params = GridLayout.LayoutParams().apply {
                         width = 0
                         height = 0
-                        // Koreksi ada di sini: Gunakan GridLayout.spec
-                        columnSpec = GridLayout.spec(j, 1, 1f) // Buat space fleksibel
+                        columnSpec = GridLayout.spec(j, 1, 1f)
                     }
                     space.layoutParams = params
                     binding.gridLayoutSeats.addView(space)
                     continue
                 }
 
-                val seatName = "${(i + 'A'.code).toChar()}${if (j < 4) j + 1 else j}"
+                val seatName = "${('A' + i)}${if (j < 4) j + 1 else j}"
                 val seatView = TextView(context).apply {
                     text = seatName
                     width = 100
                     height = 100
                     gravity = android.view.Gravity.CENTER
                     textSize = 12f
-                    // Gunakan GridLayout.LayoutParams
                     layoutParams = GridLayout.LayoutParams().apply {
                         setMargins(8, 8, 8, 8)
                     }
@@ -111,11 +102,9 @@ class SeatPickerDialogFragment : DialogFragment() {
 
     private fun onSeatClicked(seatView: TextView, seatName: String) {
         if (selectedSeats.contains(seatName)) {
-            // Batal memilih kursi
             selectedSeats.remove(seatName)
             seatView.setBackgroundResource(R.drawable.seat_available)
         } else {
-            // Memilih kursi baru
             if (selectedSeats.size < ticketCount) {
                 selectedSeats.add(seatName)
                 seatView.setBackgroundResource(R.drawable.seat_selected)
@@ -149,11 +138,10 @@ class SeatPickerDialogFragment : DialogFragment() {
         const val ARG_TICKET_COUNT = "ticket_count"
 
         fun newInstance(ticketCount: Int): SeatPickerDialogFragment {
-            val args = Bundle().apply {
-                putInt(ARG_TICKET_COUNT, ticketCount)
-            }
             return SeatPickerDialogFragment().apply {
-                arguments = args
+                arguments = Bundle().apply {
+                    putInt(ARG_TICKET_COUNT, ticketCount)
+                }
             }
         }
     }

@@ -22,16 +22,17 @@ class AuthActivity : AppCompatActivity() {
 
         auth = Firebase.auth
 
-        // Cek status login dari Firebase
+        // Cek status login dari Firebase saat aplikasi dimulai
         if (auth.currentUser != null) {
             navigateToMain()
-            return
+            return // Hentikan eksekusi agar tidak menampilkan layout AuthActivity
         }
 
         binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (savedInstanceState == null) { // Hanya tampilkan fragment jika activity baru dibuat
+        // Tampilkan LoginFragment sebagai default
+        if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.auth_fragment_container, LoginFragment())
                 .commitNow()
@@ -40,23 +41,17 @@ class AuthActivity : AppCompatActivity() {
 
     fun navigateToMain() {
         startActivity(Intent(this, MainActivity::class.java))
-        finish() // Tutup AuthActivity agar tidak bisa kembali dengan tombol back
+        finish()
     }
 
     fun navigateToRegister() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.auth_fragment_container, RegisterFragment())
-            .addToBackStack(null) // Agar bisa kembali ke LoginFragment
+            .addToBackStack(null) // Agar tombol back bisa kembali ke LoginFragment
             .commit()
     }
 
     fun navigateToLogin() {
-        supportFragmentManager.popBackStack() // Kembali ke fragment sebelumnya (LoginFragment)
-    }
-
-    private fun isUserLoggedIn(): Boolean {
-        // Implementasi pengecekan status login
-        val sharedPreferences = getSharedPreferences("CinemaZonePrefs", MODE_PRIVATE)
-        return sharedPreferences.getBoolean("isLoggedIn", false)
+        supportFragmentManager.popBackStack()
     }
 }

@@ -1,7 +1,6 @@
 package com.dicoding.projekakhirplatformkelompok5.ui.profile
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
@@ -12,10 +11,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
-import com.dicoding.projekakhirplatformkelompok5.R
 import com.dicoding.projekakhirplatformkelompok5.databinding.FragmentProfileBinding
 import com.dicoding.projekakhirplatformkelompok5.ui.auth.AuthActivity
-import androidx.core.content.edit
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -25,56 +22,43 @@ class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
-
-    // Deklarasikan instance Firebase Auth
     private lateinit var auth: FirebaseAuth
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
-        // Inisialisasi Firebase Auth
         auth = Firebase.auth
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         loadUserProfile()
 
-        // Listener untuk tombol-tombol tetap sama
         binding.btnEditProfile.setOnClickListener {
             showEditNameDialog()
         }
+
         binding.btnOrderHistory.setOnClickListener {
             startActivity(Intent(activity, OrderHistoryActivity::class.java))
         }
+
         binding.btnAboutApp.setOnClickListener {
             startActivity(Intent(activity, AboutActivity::class.java))
         }
+
         binding.btnLogout.setOnClickListener {
             showLogoutConfirmationDialog()
         }
     }
 
-    /**
-     * REVISI: Mengambil data langsung dari Firebase Auth.
-     */
     private fun loadUserProfile() {
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            // Ambil nama dari `displayName` dan email dari `email` properti FirebaseUser
             binding.tvProfileName.text = currentUser.displayName ?: "Nama Belum Diatur"
             binding.tvProfileEmail.text = currentUser.email
-            // Foto profil juga bisa diambil dari currentUser.photoUrl jika sudah diset
         }
     }
 
-    /**
-     * UI Dialog tetap sama, yang berubah adalah fungsi yang dipanggil (`saveNewName`).
-     */
     private fun showEditNameDialog() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Ubah Nama")
@@ -98,41 +82,29 @@ class ProfileFragment : Fragment() {
         builder.setPositiveButton("Simpan") { dialog, _ ->
             val newName = input.text.toString().trim()
             if (newName.isNotEmpty()) {
-                saveNewName(newName) // Panggil fungsi saveNewName yang sudah direvisi
+                saveNewNameToFirebase(newName)
                 dialog.dismiss()
             } else {
                 Toast.makeText(requireContext(), "Nama tidak boleh kosong", Toast.LENGTH_SHORT).show()
             }
         }
-
-        builder.setNegativeButton("Batal") { dialog, _ ->
-            dialog.cancel()
-        }
+        builder.setNegativeButton("Batal") { dialog, _ -> dialog.cancel() }
         builder.show()
     }
 
-    /**
-     * REVISI: Menyimpan nama baru ke profil Firebase, bukan SharedPreferences.
-     */
-    private fun saveNewName(newName: String) {
+    private fun saveNewNameToFirebase(newName: String) {
         val user = auth.currentUser
-
-        // Buat request untuk mengubah profil di Firebase
         val profileUpdates = userProfileChangeRequest {
             displayName = newName
         }
-
-        user?.updateProfile(profileUpdates)
-            ?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Jika berhasil, perbarui UI dan beri notifikasi
-                    Toast.makeText(requireContext(), "Nama berhasil diperbarui", Toast.LENGTH_SHORT).show()
-                    binding.tvProfileName.text = newName
-                } else {
-                    // Jika gagal, beri tahu pengguna
-                    Toast.makeText(requireContext(), "Gagal memperbarui nama: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                }
+        user?.updateProfile(profileUpdates)?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(requireContext(), "Nama berhasil diperbarui", Toast.LENGTH_SHORT).show()
+                binding.tvProfileName.text = newName
+            } else {
+                Toast.makeText(requireContext(), "Gagal memperbarui nama.", Toast.LENGTH_SHORT).show()
             }
+        }
     }
 
     private fun showLogoutConfirmationDialog() {
@@ -144,14 +116,8 @@ class ProfileFragment : Fragment() {
             .show()
     }
 
-    /**
-     * REVISI: Logout menggunakan Firebase Auth.
-     */
     private fun logoutUser() {
-        // Panggil metode signOut dari Firebase
         auth.signOut()
-
-        // Navigasi kembali ke halaman login
         val intent = Intent(activity, AuthActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)

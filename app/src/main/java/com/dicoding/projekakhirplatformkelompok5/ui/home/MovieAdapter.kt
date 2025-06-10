@@ -11,12 +11,11 @@ import com.dicoding.projekakhirplatformkelompok5.databinding.ItemMovieBinding
 
 class MovieAdapter(
     private val context: Context,
-    private var movieList: MutableList<Movie>,
+    private var movieList: List<Movie>,
     private val onMovieClickListener: (Movie) -> Unit,
-    private val onWishlistClickListener: (Movie, Boolean) -> Unit // movie, isAddingToWishlist
+    private val onWishlistClickListener: (Movie, Boolean) -> Unit
 ) : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
 
-    // Simpan ID film yang ada di wishlist untuk update UI ikon
     private val wishlistedMovieIds = mutableSetOf<Int>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
@@ -25,19 +24,17 @@ class MovieAdapter(
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        val movie = movieList[position]
-        holder.bind(movie)
+        holder.bind(movieList[position])
     }
 
     override fun getItemCount(): Int = movieList.size
 
-    fun updateData(newMovies: List<Movie>) {
-        movieList.clear()
-        movieList.addAll(newMovies)
+    fun setInitialWishlist(ids: Set<Int>) {
+        wishlistedMovieIds.clear()
+        wishlistedMovieIds.addAll(ids)
         notifyDataSetChanged()
     }
 
-    // Panggil ini dari fragment setelah status wishlist di database/SharedPreferences diubah
     fun setWishlistStatus(movieId: Int, isWishlisted: Boolean) {
         if (isWishlisted) {
             wishlistedMovieIds.add(movieId)
@@ -46,73 +43,39 @@ class MovieAdapter(
         }
         val index = movieList.indexOfFirst { it.id == movieId }
         if (index != -1) {
-            notifyItemChanged(index, "wishlist_changed_payload")
+            notifyItemChanged(index)
         }
     }
-
-    // Panggil ini saat adapter pertama kali dibuat untuk memuat status wishlist awal
-    fun setInitialWishlist(ids: Set<Int>) {
-        wishlistedMovieIds.clear()
-        wishlistedMovieIds.addAll(ids)
-        notifyDataSetChanged() // Atau loop dan notifyItemChanged jika lebih efisien
-    }
-
 
     inner class MovieViewHolder(private val binding: ItemMovieBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(movie: Movie) {
             binding.tvMovieTitle.text = movie.title
-            binding.tvMovieReleaseDate.text = "${context.getString(R.string.release_date_label)}${movie.releaseDate ?: "N/A"}"
-            binding.tvMovieRating.text = "${context.getString(R.string.rating_label)}${movie.voteAverage?.toString() ?: "N/A"}"
+            binding.tvMovieReleaseDate.text = "Release Date: ${movie.releaseDate ?: "N/A"}"
+            binding.tvMovieRating.text = movie.voteAverage.toString()
             binding.tvMovieOverviewSnippet.text = movie.overview
 
-            // GANTI "YOUR_BASE_IMAGE_URL" dengan base URL gambar dari API/sumbermu
-            // Contoh: "https://image.tmdb.org/t/p/w500"
-            // Jika posterPath sudah URL lengkap, tidak perlu base URL.
-            val posterUrl = if (movie.posterPath != null && movie.posterPath.startsWith("/")) {
-                "https://image.tmdb.org/t/p/w500" + movie.posterPath
-            } else {
-                movie.posterPath // Asumsikan sudah URL lengkap jika tidak diawali "/"
-            }
-
             Glide.with(context)
-                .load(posterUrl)
-                .placeholder(R.drawable.ic_cinema) // Ganti dengan drawable placeholder-mu
-                .error(R.drawable.ic_broken_image) // Ganti dengan drawable error-mu
+                .load(movie.posterPath)
+                .placeholder(R.drawable.ic_launcher_background)
+                .error(R.drawable.ic_launcher_background)
                 .into(binding.ivMoviePoster)
 
             // Update ikon wishlist
-            updateWishlistIcon(movie.id)
+            val isWishlisted = wishlistedMovieIds.contains(movie.id)
+            if (isWishlisted) {
+                binding.ivAddToWishlistItem.setImageResource(R.drawable.ic_favorite_filled)
+            } else {
+                binding.ivAddToWishlistItem.setImageResource(R.drawable.ic_favorite)
+            }
 
             binding.root.setOnClickListener {
                 onMovieClickListener(movie)
             }
 
             binding.ivAddToWishlistItem.setOnClickListener {
-                val isCurrentlyWishlisted = wishlistedMovieIds.contains(movie.id)
-                // Panggil listener di fragment, fragment yang akan urus logika DB/SharedPreferences
-                onWishlistClickListener(movie, !isCurrentlyWishlisted)
-                // UI icon akan diupdate setelah fragment memanggil setWishlistStatus
+                val currentlyWishlisted = wishlistedMovieIds.contains(movie.id)
+                onWishlistClickListener(movie, !currentlyWishlisted)
             }
-        }
-
-        private fun updateWishlistIcon(movieId: Int) {
-            if (wishlistedMovieIds.contains(movieId)) {
-                binding.ivAddToWishlistItem.setImageResource(R.drawable.ic_favorite_filled) // Ikon terisi
-                binding.ivAddToWishlistItem.contentDescription = context.getString(R.string.remove_from_wishlist)
-            } else {
-                binding.ivAddToWishlistItem.setImageResource(R.drawable.ic_favorite) // Ikon border
-                binding.ivAddToWishlistItem.contentDescription = context.getString(R.string.add_to_wishlist)
-            }
-        }
-    }
-
-    // Untuk update spesifik pada icon wishlist tanpa rebind seluruh item
-    override fun onBindViewHolder(holder: MovieViewHolder, position: Int, payloads: MutableList<Any>) {
-        if (payloads.contains("wishlist_changed_payload")) {
-            val movie = movieList[position]
-            holder.bind(movie) // Atau cukup panggil holder.updateWishlistIcon(movie.id)
-        } else {
-            super.onBindViewHolder(holder, position, payloads)
         }
     }
 }

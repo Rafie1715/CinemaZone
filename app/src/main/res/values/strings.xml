@@ -55,4 +55,21 @@
     <string name="tentang_aplikasi">Tentang Aplikasi</string>
     <string name="qr_code_tiket">QR Code Tiket</string>
     <string name="simpan_ke_galeri">Simpan ke Galeri</string>
+    <string name="semua">Semua</string>
+    <string name="selamat_datang">Selamat Datang!</string>
+    <string name="login_untuk_melanjutkan_ke_cinemazone">Login untuk melanjutkan ke CinemaZone</string>
+    <string name="pesan_tiket_anda">Pesan Tiket Anda</string>
+    <string name="pilih_film">Pilih Film</string>
+    <string name="pilih_lokasi_bioskop">Pilih Lokasi Bioskop</string>
+    <string name="pilih_tanggal">Pilih Tanggal</string>
+    <string name="pilih_jam_tayang">Pilih Jam Tayang</string>
+    <string name="jumlah_tiket">Jumlah Tiket</string>
+    <string name="pilih_kursi">Pilih Kursi</string>
+    <string name="pesan_tiket_sekarang">Pesan Tiket Sekarang</string>
+    <string name="belum_ada_riwayat_pesanan">Belum ada riwayat pesanan.</string>
+    <string name="layar_bioskop">LAYAR BIOSKOP</string>
+    <string name="tunjukkan_qr_code_ini_ke_petugas">Tunjukkan QR Code ini ke petugas</string>
+    <string name="pemesan">Pemesan:</string>
+    <string name="jadwal_tayang">Jadwal Tayang:</string>
+    <string name="kursi">Kursi:</string>
 </resources>

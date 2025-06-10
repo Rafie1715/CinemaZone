@@ -1,91 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.orderticket.OrderTicketFragment"
-    android:padding="16dp">
+    android:clipToPadding="false"
+    android:padding="16dp"
+    tools:context=".ui.orderticket.OrderTicketFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:animateLayoutChanges="true">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/select_movie"
-            android:textAppearance="?attr/textAppearanceTitleMedium"/>
+            android:text="@string/pesan_tiket_anda"
+            android:layout_marginBottom="16dp"
+            android:textAppearance="?attr/textAppearanceHeadline6"/>
 
-        <Spinner
-            android:id="@+id/spinner_movie_selection"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layout_spinner_movie"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:minHeight="48dp"/>
+            android:hint="@string/pilih_film">
+            <AutoCompleteTextView
+                android:id="@+id/spinner_movie"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ticket_quantity"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:layout_marginTop="16dp"/>
-
-        <EditText
-            android:id="@+id/et_quantity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:hint="@string/hint_quantity"
-            android:layout_marginTop="8dp"
-            android:minHeight="48dp"/>
-
-        <Button
-            android:id="@+id/btn_select_seats"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layout_spinner_location"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/pilih_kursi_anda"
-            style="?attr/materialButtonOutlinedStyle"/>
+            android:hint="@string/pilih_lokasi_bioskop"
+            android:visibility="gone"
+            tools:visibility="visible">
+            <AutoCompleteTextView
+                android:id="@+id/spinner_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/tv_selected_seats"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layout_spinner_date"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            tools:text="Kursi Dipilih: A1, A2, A3"/>
+            android:layout_marginTop="16dp"
+            android:hint="@string/pilih_tanggal"
+            android:visibility="gone"
+            tools:visibility="visible">
+            <AutoCompleteTextView
+                android:id="@+id/spinner_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_time_selection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                style="@style/TextAppearance.Material3.LabelLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/pilih_jam_tayang"/>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:singleSelection="true"/>
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_order_summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            app:strokeWidth="0dp"
+            tools:visibility="visible">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+                <TextView
+                    android:id="@+id/tv_studio_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Studio: Studio 1"/>
+                <TextView
+                    android:id="@+id/tv_price_info"
+                    android:layout_marginTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Harga per Tiket: Rp 50,000"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:id="@+id/layout_seat_selection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/jumlah_tiket"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_quantity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <Button
+                android:id="@+id/btn_select_seats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pilih_kursi"
+                android:layout_marginTop="8dp"/>
+            <TextView
+                android:id="@+id/tv_selected_seats"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Kursi: A1, A2"/>
+        </LinearLayout>
 
         <Button
             android:id="@+id/btn_process_order"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/process_order"
-            android:backgroundTint="@color/purple_500"
-            android:layout_marginTop="24dp"/>
+            android:text="@string/pesan_tiket_sekarang"
+            android:layout_marginTop="24dp"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="24dp"/>
 
         <TextView
             android:id="@+id/tv_order_history_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/order_history"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:layout_marginTop="32dp"/>
+            android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_order_history"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:visibility="gone"/>
+            android:layout_marginTop="8dp"/>
+
         <TextView
             android:id="@+id/tv_no_order_history"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/no_order_history_yet"
+            android:text="@string/belum_ada_riwayat_pesanan"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:visibility="gone"/>
-
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            tools:visibility="visible" />
     </LinearLayout>
 </ScrollView>

@@ -2,11 +2,7 @@ package com.dicoding.projekakhirplatformkelompok5.ui.profile
 
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.dicoding.projekakhirplatformkelompok5.R
 import com.dicoding.projekakhirplatformkelompok5.databinding.ActivityAboutBinding
 
 class AboutActivity : AppCompatActivity() {
@@ -20,6 +16,14 @@ class AboutActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbarAbout)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        try {
+            val version = packageManager.getPackageInfo(packageName, 0).versionName
+            binding.tvAppVersion.text = "Versi $version"
+        } catch (e: Exception) {
+            e.printStackTrace()
+            binding.tvAppVersion.text = "Versi 1.0.0"
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

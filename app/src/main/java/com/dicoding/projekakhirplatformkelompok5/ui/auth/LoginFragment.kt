@@ -1,6 +1,5 @@
 package com.dicoding.projekakhirplatformkelompok5.ui.auth
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.dicoding.projekakhirplatformkelompok5.databinding.FragmentLoginBinding
-import androidx.core.content.edit
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -18,7 +16,6 @@ class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-    // Deklarasikan instance Firebase Auth
     private lateinit var auth: FirebaseAuth
 
     override fun onCreateView(
@@ -26,7 +23,6 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
-        // Inisialisasi Firebase Auth
         auth = Firebase.auth
         return binding.root
     }
@@ -43,19 +39,17 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // Panggil Firebase untuk sign in
+            // Proses login menggunakan Firebase
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
-                        // Login berhasil, navigasi ke MainActivity
                         Toast.makeText(requireContext(), "Login berhasil!", Toast.LENGTH_SHORT).show()
                         (activity as? AuthActivity)?.navigateToMain()
                     } else {
-                        // Jika login gagal, tampilkan pesan error
                         Toast.makeText(
                             requireContext(),
                             "Autentikasi gagal: ${task.exception?.message}",
-                            Toast.LENGTH_SHORT,
+                            Toast.LENGTH_LONG,
                         ).show()
                     }
                 }
