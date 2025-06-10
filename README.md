@@ -14,11 +14,15 @@ _**Catatan:** Ganti link placeholder di bawah ini dengan URL screenshot nyata da
 
 | Halaman Login | Halaman Utama (Home) | Filter & Search |
 | :---: | :---: | :---: |
-| ![Login](https://github.com/user-attachments/assets/e8f383b7-8884-498e-9eb8-1827428fbc76) | ![Home](https://via.placeholder.com/270x540.png?text=Daftar+Film) | ![Filter](https://via.placeholder.com/270x540.png?text=Filter+Genre) |
+| ![Login](https://github.com/user-attachments/assets/e8f383b7-8884-498e-9eb8-1827428fbc76) | ![Home](https://github.com/user-attachments/assets/977818f9-a481-4447-83d1-2edd14260b21) | ![Filter](https://github.com/user-attachments/assets/c70d1276-96d9-4ca0-a1f3-6aacc76fd4cf) |
 
-| Detail Film | Pemesanan & Pemilihan Kursi | Riwayat & E-Ticket |
+| Detail Film | Pemesanan & Pemilihan Kursi | Riwayat Pesanan|
 | :---: | :---: | :---: |
-| ![Detail Film](https://via.placeholder.com/270x540.png?text=Detail+Film) | ![Pilih Kursi](https://via.placeholder.com/270x540.png?text=Peta+Kursi) | ![E-Ticket](https://via.placeholder.com/270x540.png?text=E-Ticket+QR) |
+| ![Detail Film](https://github.com/user-attachments/assets/4da9f404-9f31-4d4b-9118-8e3b0020780d) | <img src="https://github.com/user-attachments/assets/27063fb4-2290-48fa-b123-ddd474a7dec5" alt="Pemesanan Tiker" width="270"> <br><br> <img src="https://github.com/user-attachments/assets/c2aa9ef4-e9d9-4062-9020-24a81a4ac8e2" alt="Pemilihan Kursi" width="270">  | ![E-Ticket](https://github.com/user-attachments/assets/de64b547-69d0-4330-a552-9ccbb21a6138) |
+
+| Halaman Wishlist | Halaman Profil | E-Ticket |
+| :---: | :---: | :---: |
+| ![Wishlist](https://github.com/user-attachments/assets/bb94a838-3792-4e65-a706-f2def6ce7cae) | ![Profil](https://github.com/user-attachments/assets/a98407f8-9f20-4729-b130-754b5ab648d2) | ![Riwayat Pesanan](https://github.com/user-attachments/assets/a2093950-3590-46fd-b5f2-9bfb5709b139) |
 
 
 ## ✨ Fitur Utama
