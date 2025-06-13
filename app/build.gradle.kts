@@ -61,4 +61,5 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth.ktx)
     implementation("com.google.zxing:core:3.5.3")
+    implementation(libs.firebase.firestore.ktx)
 }
