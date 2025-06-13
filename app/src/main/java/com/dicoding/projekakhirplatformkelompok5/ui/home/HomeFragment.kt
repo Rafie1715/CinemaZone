@@ -10,7 +10,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.dicoding.projekakhirplatformkelompok5.data.local.WishlistDatabaseHelper
 import com.dicoding.projekakhirplatformkelompok5.data.model.Movie
 import com.dicoding.projekakhirplatformkelompok5.data.network.ApiClient
 import com.dicoding.projekakhirplatformkelompok5.databinding.FragmentHomeBinding
@@ -18,6 +17,7 @@ import com.google.android.material.chip.Chip
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
@@ -25,18 +25,19 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
+    private val db = Firebase.firestore
     private val fullMovieList = mutableListOf<Movie>()
     private val displayedMovieList = mutableListOf<Movie>()
     private lateinit var movieAdapter: MovieAdapter
-    private lateinit var wishlistDbHelper: WishlistDatabaseHelper
     private lateinit var auth: FirebaseAuth
+
+    private val wishlistedMovieIds = mutableSetOf<Int>()
 
     private var currentQuery: String = ""
     private var currentGenre: String = "Semua"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        wishlistDbHelper = WishlistDatabaseHelper(requireContext())
         auth = Firebase.auth
         return binding.root
     }
@@ -45,7 +46,21 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setupSearchListener()
+        fetchUserWishlist()
         fetchMovies()
+    }
+
+    private fun fetchUserWishlist() {
+        val user = auth.currentUser ?: return
+        db.collection("users").document(user.uid).collection("wishlist").get()
+            .addOnSuccessListener { result ->
+                if (_binding == null) return@addOnSuccessListener
+                wishlistedMovieIds.clear()
+                for (document in result) {
+                    document.id.toIntOrNull()?.let { wishlistedMovieIds.add(it) }
+                }
+                movieAdapter.setInitialWishlist(wishlistedMovieIds)
+            }
     }
 
     private fun setupRecyclerView() {
@@ -141,7 +156,6 @@ class HomeFragment : Fragment() {
                             fullMovieList.addAll(movies)
                             setupGenreChips()
                             filterMovies()
-                            loadInitialWishlistStatus()
                         }
                     }
                 } else {
@@ -164,33 +178,27 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun loadInitialWishlistStatus() {
-        val user = auth.currentUser
-        val wishlistedIds = mutableSetOf<Int>()
-        if (user != null) {
-            val userId = user.uid
-            fullMovieList.forEach { movie ->
-                if (wishlistDbHelper.isMovieInWishlist(movie.id, userId)) {
-                    wishlistedIds.add(movie.id)
-                }
-            }
-        }
-        movieAdapter.setInitialWishlist(wishlistedIds)
-    }
-
     private fun handleWishlistAction(movie: Movie, addToWishlist: Boolean) {
         val user = auth.currentUser
         if (user == null) {
             Toast.makeText(requireContext(), "Silakan login untuk menggunakan wishlist", Toast.LENGTH_SHORT).show()
             return
         }
-        val userId = user.uid
+
+        val wishlistItemRef = db.collection("users").document(user.uid)
+            .collection("wishlist").document(movie.id.toString())
+
         if (addToWishlist) {
-            wishlistDbHelper.addMovieToWishlist(movie, userId)
-            Toast.makeText(requireContext(), "${movie.title} ditambahkan ke wishlist", Toast.LENGTH_SHORT).show()
+            val wishlistItem = hashMapOf(
+                "title" to movie.title,
+                "posterPath" to movie.posterPath,
+                "addedDate" to System.currentTimeMillis()
+            )
+            wishlistItemRef.set(wishlistItem)
+                .addOnSuccessListener { Toast.makeText(context, "${movie.title} ditambahkan ke wishlist", Toast.LENGTH_SHORT).show() }
         } else {
-            wishlistDbHelper.removeMovieFromWishlist(movie.id, userId)
-            Toast.makeText(requireContext(), "${movie.title} dihapus dari wishlist", Toast.LENGTH_SHORT).show()
+            wishlistItemRef.delete()
+                .addOnSuccessListener { Toast.makeText(context, "${movie.title} dihapus dari wishlist", Toast.LENGTH_SHORT).show() }
         }
         movieAdapter.setWishlistStatus(movie.id, addToWishlist)
     }

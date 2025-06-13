@@ -1,6 +1,7 @@
 package com.dicoding.projekakhirplatformkelompok5.ui.orderticket
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,13 +20,18 @@ class SeatPickerDialogFragment : DialogFragment() {
     private val binding get() = _binding!!
 
     private var ticketCount = 0
-    private val selectedSeats = mutableListOf<String>()
+    private var occupiedSeats = listOf<String>()
 
-    private val occupiedSeats = listOf("A3", "A4", "C5", "D1", "D2")
+    private val selectedSeats = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ticketCount = arguments?.getInt(ARG_TICKET_COUNT) ?: 0
+        arguments?.let {
+            ticketCount = it.getInt(ARG_TICKET_COUNT)
+            occupiedSeats = it.getStringArrayList(ARG_OCCUPIED_SEATS) ?: listOf()
+
+            Log.d("SeatDebug", "DIALOG DIBUAT - Menerima argumen: ticketCount=$ticketCount, occupiedSeats=$occupiedSeats")
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -62,7 +68,7 @@ class SeatPickerDialogFragment : DialogFragment() {
         for (i in 0 until rows) {
             for (j in 0 until cols + 1) {
                 if (j == 4) {
-                    val space = View(context)
+                    val space = View(requireContext())
                     val params = GridLayout.LayoutParams().apply {
                         width = 0
                         height = 0
@@ -74,7 +80,14 @@ class SeatPickerDialogFragment : DialogFragment() {
                 }
 
                 val seatName = "${('A' + i)}${if (j < 4) j + 1 else j}"
-                val seatView = TextView(context).apply {
+
+                val isOccupied = occupiedSeats.contains(seatName)
+
+                if (seatName == "F4" || seatName == "F5" || seatName == "F7" || seatName == "F8") {
+                    Log.d("SeatDebug", "DIALOG CHECK - Mengecek kursi '$seatName'. Apakah ada di list occupiedSeats? -> $isOccupied")
+                }
+
+                val seatView = TextView(requireContext()).apply {
                     text = seatName
                     width = 100
                     height = 100
@@ -86,7 +99,7 @@ class SeatPickerDialogFragment : DialogFragment() {
                 }
 
                 when {
-                    occupiedSeats.contains(seatName) -> {
+                    isOccupied -> {
                         seatView.setBackgroundResource(R.drawable.seat_occupied)
                         seatView.isEnabled = false
                     }
@@ -136,11 +149,13 @@ class SeatPickerDialogFragment : DialogFragment() {
         const val REQUEST_KEY = "seat_picker_request"
         const val RESULT_SEATS = "selected_seats"
         const val ARG_TICKET_COUNT = "ticket_count"
+        private const val ARG_OCCUPIED_SEATS = "occupied_seats"
 
-        fun newInstance(ticketCount: Int): SeatPickerDialogFragment {
+        fun newInstance(ticketCount: Int, occupiedSeats: ArrayList<String>): SeatPickerDialogFragment {
             return SeatPickerDialogFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_TICKET_COUNT, ticketCount)
+                    putStringArrayList(ARG_OCCUPIED_SEATS, occupiedSeats)
                 }
             }
         }
