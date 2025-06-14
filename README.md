@@ -52,7 +52,7 @@ Untuk menjalankan proyek ini di Android Studio, ikuti langkah-langkah berikut:
 
 1.  **Clone Repositori**
     ```bash
-    git clone [https://github.com/](https://github.com/)Rafie1715/CinemaZone.git
+    git clone https://github.com/Rafie1715/CinemaZone.git
     ```
 2.  **Buka di Android Studio** dan tunggu proses Gradle Sync.
 
