@@ -24,56 +24,27 @@ Aplikasi ini mendemonstrasikan implementasi arsitektur Android modern, integrasi
 | :---: | :---: | :---: |
 | ![Wishlist](https://github.com/user-attachments/assets/bb94a838-3792-4e65-a706-f2def6ce7cae) | ![Profil](https://github.com/user-attachments/assets/a98407f8-9f20-4729-b130-754b5ab648d2) | ![Riwayat Pesanan](https://github.com/user-attachments/assets/a2093950-3590-46fd-b5f2-9bfb5709b139) |
 
-
 ## ✨ Fitur Utama
 
-* **Autentikasi Pengguna Modern:**
-    * Registrasi dan Login pengguna yang aman menggunakan **Firebase Authentication**.
-    * Manajemen sesi otomatis, pengguna tetap login setelah aplikasi ditutup.
-    * Fitur update nama profil yang tersimpan di Firebase.
-
-* **Katalog Film Dinamis:**
-    * Menampilkan daftar film dari sumber data JSON eksternal.
-    * **Search Bar** untuk mencari film berdasarkan judul secara *real-time*.
-    * **Filter Kategori Genre** menggunakan `ChipGroup` yang dinamis.
-    * Tampilan detail film dalam dialog modern saat item diklik, lengkap dengan tombol untuk menonton trailer.
-
-* **Alur Pemesanan Tiket Lengkap:**
-    * Form pemesanan bertingkat yang logis: Pilih Film -> Lokasi -> Tanggal -> Jam Tayang.
-    * Pilihan yang saling bergantung (misal: pilihan tanggal muncul setelah lokasi dipilih).
-    * **Peta Kursi Visual** interaktif yang memungkinkan pengguna memilih kursi secara manual.
-    * Validasi untuk memastikan jumlah tiket sesuai dengan jumlah kursi yang dipilih.
-
-* **E-Ticket & QR Code:**
-    * Membuat **E-Ticket** digital untuk setiap pesanan yang berhasil.
-    * Generate **QR Code** unik yang berisi seluruh detail pesanan (dalam format JSON).
-    * Fitur untuk **menyimpan E-Ticket** sebagai gambar ke galeri perangkat pengguna.
-
-* **Manajemen Data Lokal & Akun:**
-    * **Wishlist:** Menyimpan film favorit secara lokal per pengguna menggunakan database **SQLite**.
-    * **Riwayat Pesanan:** Semua transaksi tiket disimpan di database **SQLite** dan dapat diakses melalui halaman profil.
-    * Halaman profil yang menampilkan data pengguna, serta menyediakan akses ke Riwayat Pesanan dan halaman Tentang Aplikasi.
-
-* **Pengalaman Pengguna (UX) yang Ditingkatkan:**
-    * **Animasi RecyclerView:** Item film muncul dengan efek *slide-up* dan *fade-in* yang elegan.
-    * **Animasi Interaktif:** Ikon "Wishlist" memberikan feedback animasi "pop" saat ditekan.
-    * **Transisi Halus:** Perpindahan antar halaman utama (Home, Order, dll.) menggunakan animasi *fade* yang lembut.
-    * Desain UI yang bersih dan modern mengadopsi prinsip-prinsip Material Design 3.
+* **Autentikasi Pengguna Modern:** Registrasi dan Login pengguna yang aman menggunakan **Firebase Authentication**.
+* **Katalog Film Dinamis:** Menampilkan daftar film dengan **Search Bar** dan **Filter Kategori Genre**.
+* **Alur Pemesanan Tiket Lengkap:** Form pemesanan bertingkat (Film, Lokasi, Jadwal) dengan **Peta Kursi Visual** yang interaktif.
+* **E-Ticket & QR Code:** Membuat E-Ticket dengan QR Code unik yang bisa **disimpan ke galeri**.
+* **Manajemen Akun & Data:** **Wishlist** dan **Riwayat Pesanan** yang tersimpan per pengguna di **Cloud Firestore**.
+* **Pengalaman Pengguna (UX) Ditingkatkan:** Animasi pada daftar film, ikon interaktif, dan transisi antar halaman yang halus.
 
 ## 🛠️ Teknologi & Library yang Digunakan
 
 * **Bahasa Pemrograman:** [Kotlin](https://kotlinlang.org/)
-* **Arsitektur:** Single-Activity Architecture, Manajemen Fragment Manual (`FragmentManager`)
+* **Arsitektur:** Single-Activity Architecture, Manajemen Fragment Manual
 * **UI:** XML Layouts, [Material Design 3](https://m3.material.io/)
-* **Asynchronous:** [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) (`lifecycleScope`)
-* **Networking:**
-    * [Retrofit 2](https://square.github.io/retrofit/): HTTP Client untuk mengambil data dari API/JSON.
-    * [Gson](https://github.com/google/gson): Parsing JSON menjadi objek Kotlin.
-* **Database Lokal:** [SQLite](https://www.sqlite.org/index.html) (melalui `SQLiteOpenHelper`)
+* **Asynchronous:** [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html)
+* **Networking:** [Retrofit 2](https://square.github.io/retrofit/), [Gson](https://github.com/google/gson)
+* **Database Online:** [Cloud Firestore](https://firebase.google.com/docs/firestore)
 * **Autentikasi:** [Firebase Authentication](https://firebase.google.com/docs/auth)
 * **Image Loading:** [Glide](https://github.com/bumptech/glide)
 * **QR Code Generation:** [ZXing (Zebra Crossing) Core](https://github.com/zxing/zxing)
-* **Animasi:** `ViewPropertyAnimator` dan `ObjectAnimator`.
+* **Animasi:** `ViewPropertyAnimator` & `ObjectAnimator`.
 
 ## 🚀 Setup & Instalasi
 
@@ -83,24 +54,15 @@ Untuk menjalankan proyek ini di Android Studio, ikuti langkah-langkah berikut:
     ```bash
     git clone [https://github.com/](https://github.com/)[NamaUserGitHubAnda]/[NamaRepoAnda].git
     ```
-2.  **Buka di Android Studio**
-    * Buka Android Studio, pilih "Open", dan arahkan ke folder proyek.
-    * Tunggu hingga proses Gradle Sync selesai.
+2.  **Buka di Android Studio** dan tunggu proses Gradle Sync.
 
-3.  **PENTING: Setup Firebase (`google-services.json`)**
-    Repositori ini sengaja **tidak menyertakan** file `google-services.json`. Anda harus membuat proyek Firebase Anda sendiri.
-
-    * Pergi ke [Firebase Console](https://console.firebase.google.com/) dan buat proyek baru.
-    * Tambahkan aplikasi Android, masukkan **package name** dan **SHA-1 certificate fingerprint** dari komputer Anda.
-    * Unduh file `google-services.json` yang dihasilkan.
-    * Salin file tersebut ke dalam direktori **`app/`** pada proyek Android Studio Anda.
-    * Di Firebase Console, aktifkan **Email/Password sign-in method** di bagian **Authentication**.
+3.  **Setup Firebase (`google-services.json`)**
+    * Proyek ini memerlukan file `google-services.json` dari proyek Firebase Anda sendiri.
+    * Daftarkan aplikasi Anda di Firebase Console, unduh filenya, dan letakkan di dalam direktori **`app/`**.
+    * Aktifkan **Email/Password** di **Authentication** dan buat **Cloud Firestore** dalam **Test Mode**.
 
 4.  **Siapkan Data Film (`movies.json`)**
-    * Aplikasi ini mengambil data dari sebuah URL file `movies.json`.
     * Buka file `app/src/main/java/.../data/network/ApiService.kt`.
-    * Ubah URL placeholder di dalam anotasi `@GET` dengan URL raw dari file `movies.json` Anda sendiri yang sudah di-hosting (misalnya di GitHub Gist).
+    * Ubah URL placeholder di dalam anotasi `@GET` dengan URL raw dari file `movies.json` Anda.
 
-5.  **Build dan Jalankan Aplikasi**
-    * Setelah `google-services.json` dan URL API sudah benar, klik tombol **Run 'app'** (ikon play hijau) di Android Studio.
-    * **Catatan:** Jika Anda mengalami error terkait database saat pertama kali menjalankan, coba **uninstall** aplikasi dari emulator/perangkat, lalu jalankan lagi. Ini untuk memastikan skema database SQLite yang baru dibuat dengan benar.
+5.  **Build dan Jalankan Aplikasi**.yang baru dibuat dengan benar.
